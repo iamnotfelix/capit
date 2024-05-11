@@ -1,10 +1,8 @@
-import { User } from "./User";
-
 export type Attempt = {
   id: string;
-  image: string;
-  result: string;
+  imageName: string;
+  caption: string;
   score: number;
-  user: User;
   created: Date;
+  userId: string;
 };

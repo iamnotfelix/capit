@@ -1,18 +1,18 @@
-import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { CameraStackScreenProps } from "../../navigation/types";
-import { CameraButton, CloseButton } from "../../components/camera";
-
-const DATA = {
-  imagePath: "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d",
-};
+import { CloseButton } from "../../components/camera";
+import { useCameraData } from "../../contexts/CameraDataContext";
+import { ImageItem } from "../../components/ImageItem";
 
 export const AttemptScreen = ({
   navigation,
 }: CameraStackScreenProps<"Attempt">) => {
+  const { photoPath, setPhotoPath, attempt } = useCameraData();
+
   const goBack = () => {
+    setPhotoPath(undefined);
     navigation.goBack();
   };
-
   return (
     <View style={layout.container}>
       <CloseButton onPress={goBack} />
@@ -21,19 +21,12 @@ export const AttemptScreen = ({
           <Text style={styles.attemptsText}>1 / 3</Text>
         </View>
         <View style={layout.imageCard}>
-          <Image
-            // source={{ uri: `file://${imagePath}` }}
-            source={{ uri: DATA.imagePath }}
-            style={{
-              resizeMode: "cover",
-              height: 550,
-              width: 350,
-            }}
-          />
+          <ImageItem image={`${process.env.S3_URL}${attempt.imageName}`} />
+          {/* <ImageItem image={`file://${photoPath}`} /> */}
         </View>
         <View style={layout.scoreContainer}>
           <Text style={styles.scoreText}>Score</Text>
-          <Text style={styles.scoreText}>0 / 100</Text>
+          <Text style={styles.scoreText}>{attempt?.score} / 100</Text>
         </View>
       </View>
       <View style={layout.continueButtonContainer}>

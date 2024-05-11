@@ -1,8 +1,9 @@
-from pydantic import BaseModel, UUID4
+from pydantic import UUID4
 from datetime import date
+from .base import Base
 
 
-class UserInDB(BaseModel):
+class UserInDB(Base):
     id: UUID4
     username: str
     email: str
@@ -16,7 +17,7 @@ class UserInDB(BaseModel):
         orm_mode = True
 
 
-class UserGet(BaseModel):
+class UserGet(Base):
     id: UUID4
     username: str
     email: str
@@ -26,7 +27,7 @@ class UserGet(BaseModel):
     created: date
 
 
-class UserCreate(BaseModel):
+class UserCreate(Base):
     username: str
     email: str
     password: str
@@ -35,7 +36,7 @@ class UserCreate(BaseModel):
     is_admin: bool
 
 
-class UserSignUp(BaseModel):
+class UserSignUp(Base):
     username: str
     email: str
     password: str

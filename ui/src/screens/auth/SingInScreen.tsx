@@ -1,9 +1,14 @@
 import { View, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useAuth } from "../../contexts/AuthContext";
+import { LoadingIndicator } from "../../components/LoadingIndicator";
 
 export const SignInScreen = () => {
-  const { user, signIn } = useAuth();
+  const { signIn, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <View

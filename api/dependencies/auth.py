@@ -11,7 +11,7 @@ from uuid import uuid4
 
 from ..models.auth import TokenData
 from ..models.user import UserSignUp
-from .user import get_user_by_username
+from .user import get_user_by_username, get_user
 from .database import get_db
 from ..database.models import User
 
@@ -72,14 +72,14 @@ async def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        id: str = payload.get("id")
+        if id is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(id=id)
     except JWTError:
         raise credentials_exception
     
-    user = get_user_by_username(db, username=token_data.username)
+    user = get_user(db, user_id=token_data.id)
     if user is None:
         raise credentials_exception
     

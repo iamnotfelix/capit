@@ -1,3 +1,4 @@
+from .base import Base
 from pydantic import BaseModel
 
 
@@ -6,5 +7,5 @@ class Token(BaseModel):
     token_type: str
 
 
-class TokenData(BaseModel):
-    username: str | None = None
+class TokenData(Base):
+    id: str | None = None
