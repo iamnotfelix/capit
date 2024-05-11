@@ -16,6 +16,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useCameraData } from "../../contexts/CameraDataContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
 import { useAttemptMutation } from "../../hooks/attempts";
+import { ThemeModal } from "../../components/themes/ThemeModal";
+import { useTodaysTheme } from "../../hooks/themes";
 
 export const CameraScreen = ({
   navigation,
@@ -33,6 +35,7 @@ export const CameraScreen = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [cameraType, setCameraType] = useState<CameraPosition>("back");
   const [flashMode, setFlashMode] = useState<TakePhotoOptions["flash"]>("off");
+  const [isThemeModalVisble, setIsThemeModalVisible] = useState<boolean>(false);
 
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice(cameraType, {
@@ -44,6 +47,9 @@ export const CameraScreen = ({
   });
 
   const attemptsMutation = useAttemptMutation();
+  const { data: theme, isLoading: themeIsLoading } = useTodaysTheme(
+    auth?.tokenResponse.accessToken
+  );
 
   useEffect(() => {
     if (!hasPermission) {
@@ -101,6 +107,10 @@ export const CameraScreen = ({
     navigation.navigate("AllAttempts");
   };
 
+  const getIsLoading = () => {
+    return isLoading || themeIsLoading;
+  };
+
   if (!hasPermission) {
     return (
       <View>
@@ -117,12 +127,18 @@ export const CameraScreen = ({
     );
   }
 
-  if (isLoading) {
+  if (getIsLoading()) {
     return <LoadingIndicator />;
   }
 
   return (
     <View style={layout.container}>
+      <ThemeModal
+        text={theme.main}
+        isVisible={isThemeModalVisble}
+        onRequestClose={() => setIsThemeModalVisible(false)}
+        onPress={() => setIsThemeModalVisible(false)}
+      />
       <>
         <Camera
           style={StyleSheet.absoluteFill}
@@ -148,6 +164,11 @@ export const CameraScreen = ({
             <CameraButton onPress={toggleCameraType} icon="loop" size={50} />
           </View>
           <View style={layout.attemptsButtonContainer}>
+            <CameraButton
+              onPress={() => setIsThemeModalVisible(true)}
+              icon="air"
+              size={50}
+            />
             <CameraButton onPress={seeAttempts} icon="image" size={50} />
           </View>
         </>
@@ -169,11 +190,13 @@ const layout = StyleSheet.create({
     position: "absolute",
     bottom: 30,
     right: 30,
+    rowGap: 30,
   },
   attemptsButtonContainer: {
     position: "absolute",
     bottom: 30,
     left: 30,
+    rowGap: 30,
   },
 });
 

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { attemptsService } from "../../services/attempts.service";
 import { Attempt } from "../../models/Attempt";
 import { attemptsKeys } from "./attemptsKeys";
+import { attemptsService } from "../../services";
 
 type AttemptMutationType = {
   imageName: string;

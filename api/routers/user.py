@@ -22,9 +22,9 @@ def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     db_user_username = crud.get_user_by_username(db, username=user.username)
 
     if db_user_username:
-        raise HTTPException(status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already registered")
     if db_user_email:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
 
     return crud.create_user(db=db, user=user)
 
@@ -39,7 +39,7 @@ def get_all_users(db: Annotated[Session, Depends(get_db)], skip: int = 0, limit:
 def get_user_by_id(user_id: UUID, db: Annotated[Session, Depends(get_db)]):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
 
 
@@ -50,10 +50,3 @@ def delete_user_by_id(user_id: UUID, db: Annotated[Session, Depends(get_db)]):
 @router.delete("/{username}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user_by_username(username: str, db: Annotated[Session, Depends(get_db)]):
     crud.delete_user_by_username(db, username=username)
-
-
-# @app.post("/users/{user_id}/items", response_model=schemas.Item)
-# def create_item_for_user(
-#     user_id: int, item: schemas.ItemCreate, db: Annotated[Session, Depends(get_db)]
-# ):
-#     return crud.create_user_item(db=db, item=item, user_id=user_id)

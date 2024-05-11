@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { attemptsService } from "../../services/attempts.service";
 import { attemptsKeys } from "./attemptsKeys";
+import { attemptsService } from "../../services";
 
 export const useAttempts = (token: string) => {
   return useQuery({

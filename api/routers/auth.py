@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from ..dependencies.auth import get_current_user, create_access_token, authenticate_user, sign_up_user
 from ..dependencies.database import get_db
+from ..dependencies import user as user_crud 
 from ..models.auth import Token
 from ..models.user import UserGet, UserSignUp
 
@@ -27,6 +28,14 @@ async def sign_up(
     user: UserSignUp,
     db: Annotated[Session, Depends(get_db)],
 ) -> UserGet:
+    db_user_email = user_crud.get_user_by_email(db, email=user.email)
+    db_user_username = user_crud.get_user_by_username(db, username=user.username)
+
+    if db_user_username:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    if db_user_email:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
     new_user = sign_up_user(db, user)
 
     if not user:

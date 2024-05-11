@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
-from datetime import date, datetime
+from datetime import datetime
 
 from ..dependencies.database import get_db
 from ..models.attempt import AttemptCreate, AttemptGet
@@ -35,8 +35,7 @@ async def get_all_attempts(
     skip: int = 0, 
     limit: int = 100
 ):
-    attempts = crud.get_attempts(db, skip=skip, limit=limit)
-    return attempts
+    return crud.get_attempts(db, skip=skip, limit=limit)
 
 
 @router.get("/me", response_model=list[AttemptGet])
@@ -69,6 +68,6 @@ async def get_attempt_by_id(
     db_attempt = crud.get_attempt(db, attempt_id=attempt_id, user_id=current_user.id)
 
     if db_attempt is None:
-        raise HTTPException(status_code=404, detail="Attempt not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Attempt not found")
     
     return db_attempt
