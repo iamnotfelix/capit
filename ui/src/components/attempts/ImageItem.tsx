@@ -32,7 +32,7 @@ export const ImageItem = (props: ImageItemPropsType) => {
         }}
         style={{
           resizeMode: "cover",
-          height: 550,
+          height: 500,
           width: 350,
         }}
         onLoadStart={() => {

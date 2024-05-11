@@ -3,20 +3,19 @@ import { View, StyleSheet, Text } from "react-native";
 import {
   Camera,
   CameraPosition,
-  PhotoFile,
   TakePhotoOptions,
   useCameraDevice,
   useCameraPermission,
 } from "react-native-vision-camera";
 import { CameraButton, CloseButton } from "../../components/camera";
-import { blobToBase64, uploadToS3 } from "../../utils";
+import { uploadToS3 } from "../../utils";
 import { useIsFocused } from "@react-navigation/native";
 import { useAppState } from "@react-native-community/hooks";
 import { CameraStackScreenProps } from "../../navigation/types";
-import { attemptsService } from "../../services/attempts.service";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCameraData } from "../../contexts/CameraDataContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
+import { useAttemptMutation } from "../../hooks/attempts";
 
 export const CameraScreen = ({
   navigation,
@@ -44,6 +43,8 @@ export const CameraScreen = ({
     ],
   });
 
+  const attemptsMutation = useAttemptMutation();
+
   useEffect(() => {
     if (!hasPermission) {
       requestPermission();
@@ -66,17 +67,14 @@ export const CameraScreen = ({
       setIsLoading(false);
       setPhotoPath(undefined);
       setAttempt(undefined);
-      // TODO: handle error
       return;
     }
 
-    // TODO: handle service error
-    // const base64 = await blobToBase64(blob);
-    const attempt = await attemptsService.addAttempt(
-      key,
-      auth?.tokenResponse.accessToken
-    );
-    console.log(attempt.caption);
+    const attempt = await attemptsMutation.mutateAsync({
+      imageName: key,
+      token: auth?.tokenResponse.accessToken,
+    });
+
     setAttempt(attempt);
 
     setIsLoading(false);

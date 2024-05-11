@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
+from datetime import date, datetime
 
 from ..dependencies.database import get_db
 from ..models.attempt import AttemptCreate, AttemptGet
@@ -36,6 +37,27 @@ async def get_all_attempts(
 ):
     attempts = crud.get_attempts(db, skip=skip, limit=limit)
     return attempts
+
+
+@router.get("/me", response_model=list[AttemptGet])
+async def get_authenticated_user_attempts_by_date(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[UserGet, Depends(auth.get_current_user)],
+    date=str(datetime.now().date()),
+):
+    datetime_date = datetime.strptime(date, '%Y-%m-%d')
+    db_attempts = crud.get_attempts_by_date(db, user_id=current_user.id, date=datetime_date)
+
+    return db_attempts
+
+
+@router.get("/me/attemptsleft")
+async def get_authenticated_user_attempts_left(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[UserGet, Depends(auth.get_current_user)],
+):
+    db_attempts = crud.get_attempts_by_date(db, user_id=current_user.id, date=datetime.now())
+    return current_user.allowed_attempts - len(db_attempts)
 
 
 @router.get("/{attempt_id}", response_model=AttemptGet)

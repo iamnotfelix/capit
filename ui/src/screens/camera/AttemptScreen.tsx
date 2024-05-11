@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { CameraStackScreenProps } from "../../navigation/types";
 import { CloseButton } from "../../components/camera";
 import { useCameraData } from "../../contexts/CameraDataContext";
-import { ImageItem } from "../../components/ImageItem";
+import { ImageItem } from "../../components/attempts/ImageItem";
 
 export const AttemptScreen = ({
   navigation,
@@ -16,17 +16,16 @@ export const AttemptScreen = ({
   return (
     <View style={layout.container}>
       <CloseButton onPress={goBack} />
-      <View style={layout.predictionContainer}>
-        <View style={layout.attemptsContainer}>
-          <Text style={styles.attemptsText}>1 / 3</Text>
+      <View style={layout.attemptContainer}>
+        <View style={layout.scoreContainer}>
+          <Text style={styles.scoreText}>{attempt.score}</Text>
         </View>
         <View style={layout.imageCard}>
           <ImageItem image={`${process.env.S3_URL}${attempt.imageName}`} />
           {/* <ImageItem image={`file://${photoPath}`} /> */}
         </View>
-        <View style={layout.scoreContainer}>
-          <Text style={styles.scoreText}>Score</Text>
-          <Text style={styles.scoreText}>{attempt?.score} / 100</Text>
+        <View style={layout.captionContainer}>
+          <Text style={styles.captionText}>{attempt?.caption}</Text>
         </View>
       </View>
       <View style={layout.continueButtonContainer}>
@@ -45,22 +44,25 @@ const layout = StyleSheet.create({
     justifyContent: "space-between",
     padding: 30,
   },
-  closeContainer: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-  },
-  predictionContainer: {
+  attemptContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     rowGap: 20,
   },
-  attemptsContainer: {},
+  scoreContainer: {
+    width: "30%",
+    backgroundColor: "#000",
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: "#505050",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   imageCard: {
     borderRadius: 10,
   },
-  scoreContainer: {
+  captionContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
@@ -72,13 +74,17 @@ const layout = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  attemptsText: {
+  captionText: {
     color: "#fff",
-    fontSize: 25,
+    fontSize: 20,
+    textAlign: "center",
+    fontStyle: "italic",
   },
   scoreText: {
     color: "#fff",
     fontSize: 25,
+    textAlign: "center",
+    fontWeight: "700",
   },
   continueButton: {
     width: "100%",

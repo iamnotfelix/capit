@@ -13,6 +13,9 @@ def get_attempts(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Attempt).offset(skip).limit(limit).all()
 
 
+def get_attempts_by_date(db: Session, user_id: UUID, date: datetime):
+    return db.query(Attempt).filter(Attempt.user_id == user_id).filter(Attempt.created == date.date()).all()
+
 def get_attempt(db: Session, attempt_id: UUID, user_id: UUID):
     db_attempt = db.query(Attempt).filter(Attempt.id == attempt_id).first()
     if db_attempt and db_attempt.user_id != user_id:
