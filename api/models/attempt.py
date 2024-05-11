@@ -13,7 +13,7 @@ class AttemptInDB(Base):
     user_id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AttemptCreate(Base):

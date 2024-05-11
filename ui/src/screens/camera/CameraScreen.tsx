@@ -76,6 +76,7 @@ export const CameraScreen = ({
       key,
       auth?.tokenResponse.accessToken
     );
+    console.log(attempt.caption);
     setAttempt(attempt);
 
     setIsLoading(false);

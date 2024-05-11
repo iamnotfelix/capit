@@ -14,7 +14,7 @@ class UserInDB(Base):
     created: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserGet(Base):

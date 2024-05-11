@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from ..database.models import Attempt
 from ..models.user import UserGet
 from ..models.attempt import AttemptCreate
+from ..ml.caption import ImageCaptioner
 
 
 def get_attempts(db: Session, skip: int = 0, limit: int = 100):
@@ -26,12 +27,14 @@ def get_user_by_image_name(db: Session, image_name: str, user_id: UUID):
     return db_attempt
 
 
-def create_attempt(db: Session, attempt: AttemptCreate, user: UserGet):
+def create_attempt(db: Session, model: ImageCaptioner, attempt: AttemptCreate, user: UserGet):
+    caption = model(attempt.image_name, 3)
+
     db_attempt = Attempt(
         id=uuid4(),
         image_name=attempt.image_name,
-        caption="", #TODO: add model to get caption and score
-        score=0,
+        caption=caption, 
+        score=0, #TODO: add model to get caption and score
         created=datetime.now(),
         user_id=user.id,
     )

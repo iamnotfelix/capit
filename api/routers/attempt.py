@@ -8,6 +8,8 @@ from ..models.attempt import AttemptCreate, AttemptGet
 from ..models.user import UserGet
 from ..dependencies import attempt as crud
 from ..dependencies import auth
+from ..ml.load import get_model
+from ..ml.caption import ImageCaptioner
 
 
 router = APIRouter(
@@ -20,9 +22,10 @@ router = APIRouter(
 async def create_attempt(
     attempt: AttemptCreate, 
     db: Annotated[Session, Depends(get_db)],
+    model: Annotated[ImageCaptioner, Depends(get_model)],
     current_user: Annotated[UserGet, Depends(auth.get_current_user)]
 ):
-    return crud.create_attempt(db=db, attempt=attempt, user=current_user)
+    return crud.create_attempt(db=db, model=model, attempt=attempt, user=current_user)
 
 
 @router.get("/", response_model=list[AttemptGet], dependencies=[Depends(auth.is_current_user_admin)])
@@ -36,7 +39,7 @@ async def get_all_attempts(
 
 
 @router.get("/{attempt_id}", response_model=AttemptGet)
-def get_attempt_by_id(
+async def get_attempt_by_id(
     attempt_id: UUID, 
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserGet, Depends(auth.get_current_user)]
