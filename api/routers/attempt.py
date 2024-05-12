@@ -7,10 +7,13 @@ from datetime import datetime
 from ..dependencies.database import get_db
 from ..models.attempt import AttemptCreate, AttemptGet
 from ..models.user import UserGet
+from ..models.theme import ThemeGet
 from ..dependencies import attempt as crud
 from ..dependencies import auth
-from ..ml.load import get_model
+from ..dependencies import theme
+from ..ml.load import get_model, get_scorer
 from ..ml.caption import ImageCaptioner
+from ..ml.rouge import Rouge
 
 
 router = APIRouter(
@@ -24,9 +27,11 @@ async def create_attempt(
     attempt: AttemptCreate, 
     db: Annotated[Session, Depends(get_db)],
     model: Annotated[ImageCaptioner, Depends(get_model)],
+    scorer: Annotated[Rouge, Depends(get_scorer)],
+    theme_today: Annotated[ThemeGet, Depends(theme.get_theme_today)],
     current_user: Annotated[UserGet, Depends(auth.get_current_user)]
 ):
-    return crud.create_attempt(db=db, model=model, attempt=attempt, user=current_user)
+    return crud.create_attempt(db=db, model=model, scorer=scorer, attempt=attempt, user=current_user, theme_today=theme_today)
 
 
 @router.get("/", response_model=list[AttemptGet], dependencies=[Depends(auth.is_current_user_admin)])

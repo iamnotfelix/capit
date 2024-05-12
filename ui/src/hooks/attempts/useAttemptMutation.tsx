@@ -15,12 +15,27 @@ export const useAttemptMutation = () => {
     mutationFn: ({ imageName, token }: AttemptMutationType) =>
       attemptsService.addAttempt(imageName, token),
     onSuccess: (attempt, variables) => {
-      queryClient.setQueryData(
-        attemptsKeys.attempts(variables.token),
-        (attempts: Attempt[]) => {
-          return [...attempts, attempt];
-        }
+      const attempts: Attempt[] = queryClient.getQueryData(
+        attemptsKeys.attempts(variables.token)
       );
+
+      // invalidate query if there is nothing in the cache
+      // if cache empty there may be something in the backend
+      if (!attempts || attempts.length == 0) {
+        queryClient.invalidateQueries({
+          queryKey: attemptsKeys.attempts(variables.token),
+        });
+      } else {
+        queryClient.setQueryData(
+          attemptsKeys.attempts(variables.token),
+          (attempts: Attempt[]) => {
+            if (attempts) {
+              return [...attempts, attempt];
+            }
+            return [attempt];
+          }
+        );
+      }
     },
   });
 };

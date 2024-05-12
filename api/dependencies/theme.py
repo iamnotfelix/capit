@@ -1,12 +1,17 @@
+from typing import Annotated
 from sqlalchemy.orm import Session
 from datetime import datetime, date
 from uuid import uuid4, UUID
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 
+
+from .database import get_db
 from ..database.models import Theme
 from ..models.user import UserGet
 from ..models.theme import ThemeCreate
 
+
+# CRUD
 
 def get_themes(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Theme).offset(skip).limit(limit).all()
@@ -16,7 +21,7 @@ def get_theme(db: Session, theme_id: UUID):
     return db.query(Theme).filter(Theme.id == theme_id).first()
 
 
-def get_themes_by_date(db: Session, active_date: date):
+def get_theme_by_date(db: Session, active_date: date):
     return db.query(Theme).filter(Theme.active_date == active_date).first()
 
 
@@ -44,3 +49,9 @@ def delete_theme_by_id(db: Session, theme_id: UUID):
 
     db.delete(db_theme)
     db.commit()
+
+
+# Extra
+
+def get_theme_today(db: Annotated[Session, Depends(get_db)]):
+    return db.query(Theme).filter(Theme.active_date == datetime.now().date()).first()

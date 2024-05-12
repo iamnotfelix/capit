@@ -4,6 +4,7 @@ from dotenv import load_dotenv, find_dotenv
 
 from .caption import ImageCaptioner
 from ..dependencies.s3 import S3Client
+from .rouge import Rouge
 
 
 load_dotenv(find_dotenv())
@@ -31,3 +32,8 @@ def load_model(with_cuda=True):
 
 def get_model():
     return load_model(False)
+
+
+def get_scorer():
+    rouge = Rouge()
+    return rouge

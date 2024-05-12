@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import {
   Camera,
   CameraPosition,
@@ -7,7 +7,11 @@ import {
   useCameraDevice,
   useCameraPermission,
 } from "react-native-vision-camera";
-import { CameraButton, CloseButton } from "../../components/camera";
+import {
+  CameraButton,
+  CloseButton,
+  NoCameraPermission,
+} from "../../components/camera";
 import { uploadToS3 } from "../../utils";
 import { useIsFocused } from "@react-navigation/native";
 import { useAppState } from "@react-native-community/hooks";
@@ -55,7 +59,7 @@ export const CameraScreen = ({
     if (!hasPermission) {
       requestPermission();
     }
-  }, [hasPermission]);
+  }, [hasPermission, isFocused]);
 
   const takePhoto = async () => {
     const photoFile = await cameraRef.current?.takePhoto({
@@ -113,9 +117,11 @@ export const CameraScreen = ({
 
   if (!hasPermission) {
     return (
-      <View>
-        <Text>Need to give permission to use the camera!</Text>
-      </View>
+      <NoCameraPermission
+        text="Need to give permission to use the camera!"
+        buttonText="Back"
+        onPress={closeCamera}
+      />
     );
   }
 

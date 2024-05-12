@@ -30,7 +30,7 @@ async def get_all_themes(
 async def get_todays_theme(
     db: Annotated[Session, Depends(get_db)],
 ):
-    db_theme = crud.get_themes_by_date(db, datetime.now().date())
+    db_theme = crud.get_theme_by_date(db, datetime.now().date())
 
     if db_theme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Theme not found")
@@ -57,7 +57,7 @@ def create_theme(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserGet, Depends(auth.is_current_user_admin)]
 ):
-    db_theme = crud.get_themes_by_date(db, active_date=theme.active_date)
+    db_theme = crud.get_theme_by_date(db, active_date=theme.active_date)
 
     if db_theme:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Active date already exists")

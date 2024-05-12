@@ -5,4 +5,5 @@ export type Attempt = {
   score: number;
   created: Date;
   userId: string;
+  themeId: string;
 };
