@@ -15,7 +15,7 @@ import {
 import { uploadToS3 } from "../../utils";
 import { useIsFocused } from "@react-navigation/native";
 import { useAppState } from "@react-native-community/hooks";
-import { CameraStackScreenProps } from "../../navigation/types";
+import { MainStackScreenProps } from "../../navigation/types";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCameraData } from "../../contexts/CameraDataContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
@@ -25,7 +25,7 @@ import { useTodaysTheme } from "../../hooks/themes";
 
 export const CameraScreen = ({
   navigation,
-}: CameraStackScreenProps<"Camera">) => {
+}: MainStackScreenProps<"Camera">) => {
   // const route = useRoute<CameraStackScreenProps<"Camera">["route"]>();
   // const navigation = useNavigation<CameraStackScreenProps<"Camera">["navigation"]>();
 
@@ -92,7 +92,7 @@ export const CameraScreen = ({
   };
 
   const closeCamera = () => {
-    navigation.navigate("HomeTab");
+    navigation.navigate("Home");
   };
 
   const toggleFlashMode = () => {

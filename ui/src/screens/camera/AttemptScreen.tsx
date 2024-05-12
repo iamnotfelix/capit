@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { CameraStackScreenProps } from "../../navigation/types";
 import { CloseButton } from "../../components/camera";
 import { useCameraData } from "../../contexts/CameraDataContext";
-import { ImageItem } from "../../components/attempts/ImageItem";
+import { ImageItem } from "../../components/attempts";
 
 export const AttemptScreen = ({
   navigation,
