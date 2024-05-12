@@ -10,12 +10,11 @@ import {
   NativeScrollEvent,
   ScrollView,
 } from "react-native";
-import { CameraStackScreenProps } from "../../navigation/types";
+import { MainStackScreenProps } from "../../navigation/types";
 import { CloseButton } from "../../components/camera";
-import { useAttempts } from "../../hooks/attempts";
+import { useAttempts, useAttemptsLeft } from "../../hooks/attempts";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
-import { Attempt } from "../../models/Attempt";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_MARGIN = 40;
@@ -23,10 +22,16 @@ const IMAGE_WIDTH = SCREEN_WIDTH - IMAGE_MARGIN * 2;
 
 export const AllAttemptsScreen = ({
   navigation,
-}: CameraStackScreenProps<"AllAttempts">) => {
+}: MainStackScreenProps<"AllAttempts">) => {
   const { auth } = useAuth();
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  const { data: attempts, isLoading: isAttemptsLoading } = useAttempts(
+    auth?.tokenResponse.accessToken
+  );
+  const { data: attemptsLeft, isLoading: isAtttemptsLeftLoading } =
+    useAttemptsLeft(auth?.tokenResponse.accessToken);
 
   const onScroll = (data: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = Math.round(data.nativeEvent.contentOffset.x / IMAGE_WIDTH);
@@ -34,77 +39,96 @@ export const AllAttemptsScreen = ({
   };
 
   const goBack = () => {
-    navigation.goBack();
+    if (attemptsLeft > 0) {
+      navigation.goBack();
+    } else {
+      const { routes, index } = navigation.getState();
+      if (routes[index - 1].name == "Camera") navigation.pop(2);
+      else navigation.goBack();
+    }
   };
 
-  const { data: attempts, isLoading: attemptsLoading } = useAttempts(
-    auth?.tokenResponse.accessToken
-  );
+  const getIsLoading = () => {
+    return isAttemptsLoading || isAtttemptsLeftLoading;
+  };
 
-  if (attemptsLoading) {
+  if (getIsLoading()) {
     return <LoadingIndicator />;
   }
-
-  // return <></>;
 
   return (
     <View style={layout.container}>
       <CloseButton onPress={goBack} />
-      <View style={layout.attepmtpsContainer}>
-        <View>
-          <Text style={styles.attemptsText}>
-            {(currentIndex + 1).toString()} / {attempts.length.toString()}
+      {attempts.length == 0 ? (
+        <View style={layout.noAttemptsContainer}>
+          <Text style={styles.noAttemptsText}>
+            You have no attempts for today!
           </Text>
         </View>
-        <View style={layout.scoreContainer}>
-          <Text style={styles.scoreText}>{attempts[currentIndex].score}</Text>
-        </View>
-        <ScrollView
-          style={{
-            backgroundColor: "#000",
-          }}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          snapToAlignment={"center"}
-          decelerationRate={"fast"}
-          pagingEnabled={true}
-          onScroll={onScroll}
-          scrollEventThrottle={100}
-        >
-          {attempts.map((attempt, index) => {
-            if (!attempt || !attempt.imageName)
-              return <View style={{ width: 0 }}></View>;
-            return (
-              <View
-                key={attempt.id}
-                style={{
-                  width: IMAGE_WIDTH,
-                  // height: "50%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: index == 0 ? IMAGE_MARGIN : 0,
-                  marginRight: index == attempts.length - 1 ? IMAGE_MARGIN : 0,
-                }}
-              >
-                <Image
-                  source={{ uri: `${process.env.S3_URL}${attempt.imageName}` }}
-                  style={styles.image}
-                />
-              </View>
-            );
-          })}
-        </ScrollView>
-        <View style={layout.captionContainer}>
-          <Text style={styles.captionText}>
-            {attempts[currentIndex].caption}
-          </Text>
-        </View>
-      </View>
-      <View style={layout.postButtonContainer}>
-        <TouchableOpacity style={styles.postButton} onPress={goBack}>
-          <Text style={styles.postButtonText}>Post</Text>
-        </TouchableOpacity>
-      </View>
+      ) : (
+        <>
+          <View style={layout.attepmtpsContainer}>
+            <View>
+              <Text style={styles.attemptsText}>
+                {(currentIndex + 1).toString()} / {attempts.length.toString()}
+              </Text>
+            </View>
+            <View style={layout.scoreContainer}>
+              <Text style={styles.scoreText}>
+                {attempts[currentIndex].score}
+              </Text>
+            </View>
+            <ScrollView
+              style={{
+                backgroundColor: "#000",
+              }}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              snapToAlignment={"center"}
+              decelerationRate={"fast"}
+              pagingEnabled={true}
+              onScroll={onScroll}
+              scrollEventThrottle={100}
+            >
+              {attempts.map((attempt, index) => {
+                if (!attempt || !attempt.imageName)
+                  return <View style={{ width: 0 }}></View>;
+                return (
+                  <View
+                    key={attempt.id}
+                    style={{
+                      width: IMAGE_WIDTH,
+                      // height: "50%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginLeft: index == 0 ? IMAGE_MARGIN : 0,
+                      marginRight:
+                        index == attempts.length - 1 ? IMAGE_MARGIN : 0,
+                    }}
+                  >
+                    <Image
+                      source={{
+                        uri: `${process.env.S3_URL}${attempt.imageName}`,
+                      }}
+                      style={styles.image}
+                    />
+                  </View>
+                );
+              })}
+            </ScrollView>
+            <View style={layout.captionContainer}>
+              <Text style={styles.captionText}>
+                {attempts[currentIndex].caption}
+              </Text>
+            </View>
+          </View>
+          <View style={layout.postButtonContainer}>
+            <TouchableOpacity style={styles.postButton} onPress={goBack}>
+              <Text style={styles.postButtonText}>Post</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -115,6 +139,11 @@ const layout = StyleSheet.create({
     backgroundColor: "#000",
     justifyContent: "space-between",
     paddingVertical: 30,
+  },
+  noAttemptsContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   attepmtpsContainer: {
     flex: 1,
@@ -150,6 +179,12 @@ const styles = StyleSheet.create({
     width: "90%",
     height: "70%",
     borderRadius: 10,
+  },
+  noAttemptsText: {
+    color: "#fff",
+    fontSize: 20,
+    textAlign: "center",
+    fontStyle: "italic",
   },
   attemptsText: {
     color: "#fff",

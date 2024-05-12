@@ -1,18 +1,35 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { CameraStackScreenProps } from "../../navigation/types";
 import { CloseButton } from "../../components/camera";
 import { useCameraData } from "../../contexts/CameraDataContext";
 import { ImageItem } from "../../components/attempts";
+import { MainStackScreenProps } from "../../navigation/types";
+import { useAttemptsLeft } from "../../hooks/attempts";
+import { useAuth } from "../../contexts/AuthContext";
+import { LoadingIndicator } from "../../components/LoadingIndicator";
 
 export const AttemptScreen = ({
   navigation,
-}: CameraStackScreenProps<"Attempt">) => {
+}: MainStackScreenProps<"Attempt">) => {
+  const { auth } = useAuth();
   const { photoPath, setPhotoPath, attempt } = useCameraData();
+
+  const { data: attemptsLeft, isLoading: isAtttemptsLeftLoading } =
+    useAttemptsLeft(auth?.tokenResponse.accessToken);
 
   const goBack = () => {
     setPhotoPath(undefined);
-    navigation.goBack();
+
+    if (attemptsLeft > 0) {
+      navigation.goBack();
+    } else {
+      navigation.replace("AllAttempts");
+    }
   };
+
+  if (isAtttemptsLeftLoading) {
+    return <LoadingIndicator />;
+  }
+
   return (
     <View style={layout.container}>
       <CloseButton onPress={goBack} />

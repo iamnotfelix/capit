@@ -29,7 +29,8 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
 
     const tokenResponse = await authService.getToken(
-      "iliescuandrei",
+      // "iliescuandrei",
+      "dummy",
       "password"
     );
     const user = await authService.getUserByToken(tokenResponse.accessToken);
