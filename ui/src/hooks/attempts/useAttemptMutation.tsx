@@ -25,6 +25,9 @@ export const useAttemptMutation = () => {
         queryClient.invalidateQueries({
           queryKey: attemptsKeys.attempts(variables.token),
         });
+        queryClient.invalidateQueries({
+          queryKey: attemptsKeys.attemptsLeft(variables.token),
+        });
       } else {
         queryClient.setQueryData(
           attemptsKeys.attempts(variables.token),
@@ -33,6 +36,12 @@ export const useAttemptMutation = () => {
               return [...attempts, attempt];
             }
             return [attempt];
+          }
+        );
+        queryClient.setQueryData(
+          attemptsKeys.attemptsLeft(variables.token),
+          (attemptsLeft: number) => {
+            return attemptsLeft - 1;
           }
         );
       }
