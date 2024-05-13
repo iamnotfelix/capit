@@ -6,6 +6,7 @@ import { MainStackScreenProps } from "../../navigation/types";
 import { useAttemptsLeft } from "../../hooks/attempts";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
+import { capitalizeAndDot } from "../../utils";
 
 export const AttemptScreen = ({
   navigation,
@@ -42,7 +43,9 @@ export const AttemptScreen = ({
           {/* <ImageItem image={`file://${photoPath}`} /> */}
         </View>
         <View style={layout.captionContainer}>
-          <Text style={styles.captionText}>{attempt?.caption}</Text>
+          <Text style={styles.captionText}>
+            {capitalizeAndDot(attempt?.caption)}
+          </Text>
         </View>
       </View>
       <View style={layout.continueButtonContainer}>

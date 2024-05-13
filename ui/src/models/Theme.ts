@@ -5,3 +5,8 @@ export type Theme = {
   all: string;
   userId: string;
 };
+
+export type ThemeGetPost = {
+  id: string;
+  main: string;
+};

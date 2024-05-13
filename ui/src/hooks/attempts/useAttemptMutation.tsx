@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Attempt } from "../../models/Attempt";
+import { Attempt } from "../../models";
 import { attemptsKeys } from "./attemptsKeys";
 import { attemptsService } from "../../services";
 
@@ -14,23 +14,22 @@ export const useAttemptMutation = () => {
   return useMutation({
     mutationFn: ({ imageName, token }: AttemptMutationType) =>
       attemptsService.addAttempt(imageName, token),
-    onSuccess: (attempt, variables) => {
+    onSuccess: (attempt, { token }) => {
       const attempts: Attempt[] = queryClient.getQueryData(
-        attemptsKeys.attempts(variables.token)
+        attemptsKeys.attempts(token)
       );
-
       // invalidate query if there is nothing in the cache
       // if cache empty there may be something in the backend
       if (!attempts || attempts.length == 0) {
         queryClient.invalidateQueries({
-          queryKey: attemptsKeys.attempts(variables.token),
+          queryKey: attemptsKeys.attempts(token),
         });
         queryClient.invalidateQueries({
-          queryKey: attemptsKeys.attemptsLeft(variables.token),
+          queryKey: attemptsKeys.attemptsLeft(token),
         });
       } else {
         queryClient.setQueryData(
-          attemptsKeys.attempts(variables.token),
+          attemptsKeys.attempts(token),
           (attempts: Attempt[]) => {
             if (attempts) {
               return [...attempts, attempt];
@@ -39,7 +38,7 @@ export const useAttemptMutation = () => {
           }
         );
         queryClient.setQueryData(
-          attemptsKeys.attemptsLeft(variables.token),
+          attemptsKeys.attemptsLeft(token),
           (attemptsLeft: number) => {
             return attemptsLeft - 1;
           }

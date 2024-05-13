@@ -38,34 +38,10 @@ def create_attempt(db: Session, model: ImageCaptioner, scorer: Rouge, attempt: A
 
     # TODO: create a better scoring system; maybe use multiple scoring systems and average them
 
-    # backup score
-    references = [word for sentence in theme_today.all.split('|') for word in sentence.split(' ')]
-    hypothesis = caption.split(' ')
-
-    frequencies = {}
-    for word in references:
-        if word in frequencies:
-            frequencies[word] += 1
-        else:
-            frequencies[word] = 1
-    
-    good_words = 0
-    for word in hypothesis:
-        if word in frequencies:
-            good_words += frequencies[word]
-
-    score1 = round(good_words / len(references) * 100)
-
-    # score computed by scorer
     references = [theme_today.all.split('|')]
     hypothesis = [caption]
     score2, _ = scorer.compute_score(references, hypothesis)
-    score2 = int(round(score2 * 100))
-
-    # choose the better score
-    score = max(score1, score2)
-
-    print(score1, score2)
+    score = int(round(score2 * 100))
 
     db_attempt = Attempt(
         id=uuid4(),
@@ -74,6 +50,7 @@ def create_attempt(db: Session, model: ImageCaptioner, scorer: Rouge, attempt: A
         score=score,
         created=datetime.now(),
         user_id=user.id,
+        theme_id=theme_today.id,
     )
     db.add(db_attempt)
     db.commit()

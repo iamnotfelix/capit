@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
 
     const tokenResponse = await authService.getToken(
       // "iliescuandrei",
-      "dummy",
+      "iliescuandrei",
       "password"
     );
     const user = await authService.getUserByToken(tokenResponse.accessToken);

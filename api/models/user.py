@@ -3,20 +3,6 @@ from datetime import date
 from .base import Base
 
 
-class UserInDB(Base):
-    id: UUID4
-    username: str
-    email: str
-    password: str
-    score: float
-    allowed_attempts: int
-    is_admin: bool
-    created: date
-
-    class Config:
-        from_attributes = True
-
-
 class UserGet(Base):
     id: UUID4
     username: str
@@ -40,3 +26,8 @@ class UserSignUp(Base):
     username: str
     email: str
     password: str
+
+
+class UserGetPost(Base):
+    id: UUID4
+    username: str

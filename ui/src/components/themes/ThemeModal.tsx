@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Entypo } from "@expo/vector-icons";
+import { capitalizeAndDot } from "../../utils";
 
 type ThemeModalType = {
   text: string;
@@ -12,10 +13,6 @@ type ThemeModalType = {
 export const ThemeModal = (props: ThemeModalType) => {
   const { text, isVisible, onRequestClose, onPress } = props;
 
-  const capitalize = (text: string) => {
-    return text[0].toUpperCase() + text.slice(1).toLowerCase() + ".";
-  };
-
   return (
     <View style={layout.centeredView}>
       <Modal
@@ -26,7 +23,7 @@ export const ThemeModal = (props: ThemeModalType) => {
       >
         <View style={layout.centeredView}>
           <View style={styles.modal}>
-            <Text style={styles.modalText}>{capitalize(text)}</Text>
+            <Text style={styles.modalText}>{capitalizeAndDot(text)}</Text>
             <View style={layout.closeButtonContainer}>
               <TouchableOpacity onPress={onPress} style={styles.closeButton}>
                 <Entypo name="cross" size={30} color={"#f1f1f1"} />

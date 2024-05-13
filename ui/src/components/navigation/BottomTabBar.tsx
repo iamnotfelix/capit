@@ -59,10 +59,10 @@ export const BottomTabBar = (props: BottomTabBarType) => {
 
 const layout = StyleSheet.create({
   wrapper: {
-    position: "absolute",
+    // position: "absolute",
+    // bottom: "3%",
+    // zIndex: 999,
     width: "100%",
-    bottom: "3%",
-    zIndex: 999,
     backgroundColor: "#000",
   },
   container: {

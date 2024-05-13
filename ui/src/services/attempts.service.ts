@@ -1,4 +1,4 @@
-import { Attempt } from "../models/Attempt";
+import { Attempt } from "../models";
 import axiosService from "../utils/axios";
 
 export const attemptsService = {
@@ -9,39 +9,36 @@ export const attemptsService = {
 
 function addAttempt(imageName: string, token: string) {
   return axiosService
-    .post(
+    .post<Attempt>(
       `attempts`,
       { imageName },
       { headers: { Authorization: `Bearer ${token}` } }
     )
     .then((response) => {
-      const attempt: Attempt = response.data;
-      return attempt;
+      return response.data;
     });
 }
 
 function getAttemptsMe(token: string) {
   return axiosService
-    .get(`attempts/me`, {
+    .get<Attempt[]>(`attempts/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     .then((response) => {
-      const attempts: Attempt[] = response.data;
-      return attempts;
+      return response.data;
     });
 }
 
 function getAttemptsLeftMe(token: string) {
   return axiosService
-    .get(`attempts/me/attemptsleft`, {
+    .get<number>(`attempts/me/attemptsleft`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     .then((response) => {
-      const attemptsLeft: number = response.data;
-      return attemptsLeft;
+      return response.data;
     });
 }

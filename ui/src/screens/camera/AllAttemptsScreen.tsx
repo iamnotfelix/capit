@@ -15,6 +15,9 @@ import { CloseButton } from "../../components/camera";
 import { useAttempts, useAttemptsLeft } from "../../hooks/attempts";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
+import { usePostMutation } from "../../hooks/posts/usePostMutation";
+import { useCanPostToday } from "../../hooks/posts/useCanPostToday";
+import { capitalizeAndDot } from "../../utils";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_MARGIN = 40;
@@ -23,15 +26,21 @@ const IMAGE_WIDTH = SCREEN_WIDTH - IMAGE_MARGIN * 2;
 export const AllAttemptsScreen = ({
   navigation,
 }: MainStackScreenProps<"AllAttempts">) => {
-  const { auth } = useAuth();
+  const {
+    auth: {
+      tokenResponse: { accessToken: token },
+    },
+  } = useAuth();
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isAddingPost, setIsAddingPost] = useState<boolean>(false);
 
-  const { data: attempts, isLoading: isAttemptsLoading } = useAttempts(
-    auth?.tokenResponse.accessToken
-  );
+  const postMutation = usePostMutation();
+  const { data: attempts, isLoading: isAttemptsLoading } = useAttempts(token);
   const { data: attemptsLeft, isLoading: isAtttemptsLeftLoading } =
-    useAttemptsLeft(auth?.tokenResponse.accessToken);
+    useAttemptsLeft(token);
+  const { data: canPostToday, isLoading: isCanPostTodayLoading } =
+    useCanPostToday(token);
 
   const onScroll = (data: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = Math.round(data.nativeEvent.contentOffset.x / IMAGE_WIDTH);
@@ -48,12 +57,40 @@ export const AllAttemptsScreen = ({
     }
   };
 
+  const createPost = async () => {
+    setIsAddingPost(true);
+    await postMutation.mutateAsync({
+      attemptId: attempts[currentIndex].id,
+      token: token,
+    });
+    setIsAddingPost(false);
+    navigation.popToTop();
+  };
+
   const getIsLoading = () => {
-    return isAttemptsLoading || isAtttemptsLeftLoading;
+    return (
+      isAttemptsLoading ||
+      isAtttemptsLeftLoading ||
+      isAddingPost ||
+      isCanPostTodayLoading
+    );
   };
 
   if (getIsLoading()) {
     return <LoadingIndicator />;
+  }
+
+  if (!canPostToday) {
+    return (
+      <View style={layout.container}>
+        <CloseButton onPress={goBack} />
+        <View style={layout.noAttemptsContainer}>
+          <Text style={styles.noAttemptsText}>
+            You have already posted today!
+          </Text>
+        </View>
+      </View>
+    );
   }
 
   return (
@@ -118,12 +155,12 @@ export const AllAttemptsScreen = ({
             </ScrollView>
             <View style={layout.captionContainer}>
               <Text style={styles.captionText}>
-                {attempts[currentIndex].caption}
+                {capitalizeAndDot(attempts[currentIndex].caption)}
               </Text>
             </View>
           </View>
           <View style={layout.postButtonContainer}>
-            <TouchableOpacity style={styles.postButton} onPress={goBack}>
+            <TouchableOpacity style={styles.postButton} onPress={createPost}>
               <Text style={styles.postButtonText}>Post</Text>
             </TouchableOpacity>
           </View>
@@ -164,6 +201,7 @@ const layout = StyleSheet.create({
     height: "10%",
     alignItems: "center",
     justifyContent: "center",
+    marginHorizontal: 20,
   },
   postButtonContainer: {
     flexDirection: "row",

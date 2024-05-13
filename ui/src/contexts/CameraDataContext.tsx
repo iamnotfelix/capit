@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { CameraContextData } from "../models";
-import { Attempt } from "../models/Attempt";
+import { Attempt, CameraContextData } from "../models";
 
 const CameraDataContext = createContext<CameraContextData>(
   {} as CameraContextData

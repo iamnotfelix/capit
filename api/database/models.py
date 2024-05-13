@@ -18,6 +18,7 @@ class User(Base):
 
     attempts = relationship("Attempt", back_populates="user")
     themes = relationship("Theme", back_populates="user")
+    posts = relationship("Post", back_populates="user")
 
 
 class Attempt(Base):
@@ -48,3 +49,20 @@ class Theme(Base):
     user = relationship("User", back_populates="themes")
 
     attempts = relationship("Attempt", back_populates="theme")
+    posts = relationship("Post", back_populates="theme")
+
+
+class Post(Base):
+    __tablename__ = "posts"
+
+    id = Column(UUID, primary_key=True, nullable=False)
+    image_name = Column(String, nullable=False)
+    caption = Column(String, nullable=False)
+    score = Column(Float, default=0, nullable=False)
+    created = Column(Date, nullable=False)
+
+    user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="posts")
+
+    theme_id = Column(UUID, ForeignKey("themes.id"), nullable=False)
+    theme = relationship("Theme", back_populates="posts")

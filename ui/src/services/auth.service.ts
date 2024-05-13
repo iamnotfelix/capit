@@ -31,13 +31,12 @@ function getToken(username: string, password: string) {
 
 function getUserByToken(token: string) {
   return axiosService
-    .get(`auth/me`, {
+    .get<User>(`auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     .then((response) => {
-      const user: User = response.data;
-      return user;
+      return response.data;
     });
 }

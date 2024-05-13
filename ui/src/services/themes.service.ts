@@ -7,13 +7,12 @@ export const themesService = {
 
 function getTodaysTheme(token: string) {
   return axiosService
-    .get(`themes/today`, {
+    .get<Theme>(`themes/today`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
     .then((response) => {
-      const theme: Theme = response.data;
-      return theme;
+      return response.data;
     });
 }

@@ -1,18 +1,31 @@
-import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { BottomTabBar, CameraButton } from "../../components/navigation";
 import { MainStackScreenProps } from "../../navigation/types";
 import { useAttemptsLeft } from "../../hooks/attempts";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
+import { postsKeys, useAllPosts } from "../../hooks/posts";
+import { PostList } from "../../components/posts";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
-  const { auth, signOut, isLoading } = useAuth();
+  const { auth, isLoading } = useAuth();
 
+  const queryClient = useQueryClient();
   const { data: attemptsLeft, isLoading: isAttemptsLeftLoading } =
     useAttemptsLeft(auth?.tokenResponse.accessToken);
+  const { data: allPosts, isLoading: isAllPostsLoading } = useAllPosts(
+    auth?.tokenResponse.accessToken
+  );
+
+  const onRefresh = () => {
+    queryClient.invalidateQueries({
+      queryKey: postsKeys.allPosts(auth?.tokenResponse.accessToken),
+    });
+  };
 
   const getIsLoading = () => {
-    return isLoading || isAttemptsLeftLoading;
+    return isLoading || isAttemptsLeftLoading || isAllPostsLoading;
   };
 
   if (getIsLoading()) {
@@ -22,9 +35,11 @@ export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
   return (
     <View style={layout.container}>
       {attemptsLeft > 0 && <CameraButton navigation={navigation} />}
-      <TouchableOpacity style={styles.singoutButton} onPress={signOut}>
-        <Text style={styles.signoutButtonText}>Sign Out</Text>
-      </TouchableOpacity>
+      <PostList
+        posts={allPosts}
+        onRefresh={onRefresh}
+        isRefreshing={isAllPostsLoading}
+      />
       <BottomTabBar currentScreen="Home" navigation={navigation} />
     </View>
   );
@@ -33,25 +48,10 @@ export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
 const layout = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#000",
   },
 });
 
-const styles = StyleSheet.create({
-  singoutButton: {
-    backgroundColor: "#000",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#505050",
-    width: 200,
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  signoutButtonText: {
-    color: "#fff",
-    fontSize: 18,
-  },
-});
+const styles = StyleSheet.create({});

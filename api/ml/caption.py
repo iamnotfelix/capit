@@ -45,7 +45,7 @@ class ImageCaptioner:
         words = [self.rev_word_map[ind] for ind in seq]
         words = self.strip_caption(words)
 
-        return ' '.join(words).capitalize() + '.'
+        return ' '.join(words)
 
 
     def strip_caption(self, words: list):

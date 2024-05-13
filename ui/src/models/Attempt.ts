@@ -1,3 +1,5 @@
+import { Theme } from "./Theme";
+
 export type Attempt = {
   id: string;
   imageName: string;
@@ -6,4 +8,5 @@ export type Attempt = {
   created: Date;
   userId: string;
   themeId: string;
+  theme: Theme;
 };

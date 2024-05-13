@@ -1,4 +1,4 @@
-export interface User {
+export type User = {
   id: string;
   username: string;
   email: string;
@@ -6,4 +6,9 @@ export interface User {
   allowedAttempts: number;
   isAdmin: boolean;
   created: Date;
-}
+};
+
+export type UserGetPost = {
+  id: string;
+  username: string;
+};
