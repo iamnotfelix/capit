@@ -4,28 +4,38 @@ import { BottomTabBar, CameraButton } from "../../components/navigation";
 import { MainStackScreenProps } from "../../navigation/types";
 import { useAttemptsLeft } from "../../hooks/attempts";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
-import { postsKeys, useAllPosts } from "../../hooks/posts";
+import { postsKeys, useAllPosts, useCanPostToday } from "../../hooks/posts";
 import { PostList } from "../../components/posts";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
-  const { auth, isLoading } = useAuth();
+  const {
+    auth: {
+      tokenResponse: { accessToken: token },
+    },
+    isLoading,
+  } = useAuth();
 
   const queryClient = useQueryClient();
   const { data: attemptsLeft, isLoading: isAttemptsLeftLoading } =
-    useAttemptsLeft(auth?.tokenResponse.accessToken);
-  const { data: allPosts, isLoading: isAllPostsLoading } = useAllPosts(
-    auth?.tokenResponse.accessToken
-  );
+    useAttemptsLeft(token);
+  const { data: allPosts, isLoading: isAllPostsLoading } = useAllPosts(token);
+  const { data: canPostToday, isLoading: isCanPostTodayLoading } =
+    useCanPostToday(token);
 
   const onRefresh = () => {
     queryClient.invalidateQueries({
-      queryKey: postsKeys.allPosts(auth?.tokenResponse.accessToken),
+      queryKey: postsKeys.allPosts(token),
     });
   };
 
   const getIsLoading = () => {
-    return isLoading || isAttemptsLeftLoading || isAllPostsLoading;
+    return (
+      isLoading ||
+      isAttemptsLeftLoading ||
+      isAllPostsLoading ||
+      isCanPostTodayLoading
+    );
   };
 
   if (getIsLoading()) {
@@ -34,7 +44,9 @@ export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
 
   return (
     <View style={layout.container}>
-      {attemptsLeft > 0 && <CameraButton navigation={navigation} />}
+      {attemptsLeft > 0 && canPostToday && (
+        <CameraButton navigation={navigation} />
+      )}
       <PostList
         posts={allPosts}
         onRefresh={onRefresh}

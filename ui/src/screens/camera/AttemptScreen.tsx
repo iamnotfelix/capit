@@ -7,6 +7,7 @@ import { useAttemptsLeft } from "../../hooks/attempts";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
 import { capitalizeAndDot } from "../../utils";
+import { Button } from "../../components/Button";
 
 export const AttemptScreen = ({
   navigation,
@@ -48,11 +49,7 @@ export const AttemptScreen = ({
           </Text>
         </View>
       </View>
-      <View style={layout.continueButtonContainer}>
-        <TouchableOpacity style={styles.continueButton} onPress={goBack}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
-      </View>
+      <Button text="Continue" onPress={goBack} />
     </View>
   );
 };
@@ -86,11 +83,6 @@ const layout = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  continueButtonContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
 });
 
 const styles = StyleSheet.create({
@@ -105,19 +97,5 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textAlign: "center",
     fontWeight: "700",
-  },
-  continueButton: {
-    width: "100%",
-    height: 60,
-    backgroundColor: "#000",
-    borderWidth: 1,
-    borderRadius: 20,
-    borderColor: "#505050",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  continueButtonText: {
-    color: "#fff",
-    fontSize: 18,
   },
 });

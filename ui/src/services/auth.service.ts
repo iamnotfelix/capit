@@ -4,6 +4,7 @@ import axiosService from "../utils/axios";
 export const authService = {
   getToken,
   getUserByToken,
+  signUp,
 };
 
 function getToken(username: string, password: string) {
@@ -35,6 +36,18 @@ function getUserByToken(token: string) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+    })
+    .then((response) => {
+      return response.data;
+    });
+}
+
+function signUp(username: string, email: string, password: string) {
+  return axiosService
+    .post<User>(`auth/signup`, {
+      username,
+      email,
+      password,
     })
     .then((response) => {
       return response.data;

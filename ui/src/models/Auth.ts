@@ -3,7 +3,8 @@ import { User } from "./User";
 export type AuthContextData = {
   auth?: Auth;
   isLoading: boolean;
-  signIn: () => Promise<void>;
+  signUp: (username: string, email: string, password: string) => Promise<User>;
+  signIn: (username: string, password: string) => Promise<void>;
   signOut: () => void;
   isAutheticated: () => boolean;
 };

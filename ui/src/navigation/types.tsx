@@ -4,6 +4,8 @@ import type { StackScreenProps } from "@react-navigation/stack";
 
 export type AuthStackParamList = {
   SignIn: undefined;
+  SignUp: undefined;
+  Welcome: undefined;
 };
 
 export type MainStackParamList = {

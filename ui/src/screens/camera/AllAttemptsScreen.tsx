@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Image,
   Text,
-  TouchableOpacity,
   Dimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -15,9 +14,10 @@ import { CloseButton } from "../../components/camera";
 import { useAttempts, useAttemptsLeft } from "../../hooks/attempts";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
-import { usePostMutation } from "../../hooks/posts/usePostMutation";
 import { useCanPostToday } from "../../hooks/posts/useCanPostToday";
 import { capitalizeAndDot } from "../../utils";
+import { Button } from "../../components/Button";
+import { usePostMutation } from "../../hooks/posts";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_MARGIN = 40;
@@ -160,9 +160,7 @@ export const AllAttemptsScreen = ({
             </View>
           </View>
           <View style={layout.postButtonContainer}>
-            <TouchableOpacity style={styles.postButton} onPress={createPost}>
-              <Text style={styles.postButtonText}>Post</Text>
-            </TouchableOpacity>
+            <Button text="Post" onPress={createPost} />
           </View>
         </>
       )}
@@ -204,9 +202,6 @@ const layout = StyleSheet.create({
     marginHorizontal: 20,
   },
   postButtonContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
     marginHorizontal: 30,
   },
 });
@@ -240,19 +235,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     fontStyle: "italic",
-  },
-  postButton: {
-    width: "100%",
-    height: 60,
-    backgroundColor: "#000",
-    borderWidth: 1,
-    borderRadius: 20,
-    borderColor: "#505050",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  postButtonText: {
-    color: "#fff",
-    fontSize: 18,
   },
 });

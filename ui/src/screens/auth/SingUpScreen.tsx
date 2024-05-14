@@ -6,41 +6,46 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { validation } from "../../utils/validation";
 import { useValidation } from "../../hooks/form";
-import { TextField, ValidationText } from "../../components/form";
+import { TextField } from "../../components/form";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
 
-export const SignInScreen = ({
+export const SignUpScreen = ({
   navigation,
-}: AuthStackScreenProps<"SignIn">) => {
-  const { signIn, isLoading } = useAuth();
+}: AuthStackScreenProps<"SignUp">) => {
+  const { signUp, isLoading } = useAuth();
 
   const { validationText: usernameValText, validate: validateUsername } =
     useValidation(validation.validateUsername);
+  const { validationText: emailValText, validate: validateEmail } =
+    useValidation(validation.validateEmail);
   const { validationText: passwordValText, validate: validatePassword } =
-    useValidation(validation.validatePasswordSignIn);
+    useValidation(validation.validatePasswordSignUp);
 
   const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [apiValidation, setApiValidation] = useState<string>(undefined);
 
-  const logIn = async () => {
+  const createAccount = async () => {
     const isUsernameValid = validateUsername(username);
+    const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
-    const isValid = isUsernameValid && isPasswordValid;
+    const isValid = isUsernameValid && isEmailValid && isPasswordValid;
     if (!isValid) {
       return;
     }
 
     try {
-      await signIn(username, password);
+      await signUp(username, email, password);
+      goToSignIn();
     } catch (error) {
-      if (error.response.status == 400 || error.response.status == 401) {
+      if (error.response.status == 400) {
         setApiValidation(error.response.data.detail);
       }
     }
   };
-  const goToSignUp = () => {
-    navigation.navigate("SignUp");
+  const goToSignIn = () => {
+    navigation.navigate("SignIn");
   };
 
   if (isLoading) {
@@ -59,6 +64,13 @@ export const SignInScreen = ({
           validationFn={validateUsername}
         />
         <TextField
+          value={email}
+          setValue={setEmail}
+          placeholder="Email"
+          validationText={emailValText}
+          validationFn={validateEmail}
+        />
+        <TextField
           value={password}
           setValue={setPassword}
           placeholder="Password"
@@ -67,16 +79,25 @@ export const SignInScreen = ({
           secureTextEntry={true}
         />
         <View style={styles.actionsContainer}>
-          <ValidationText text={apiValidation} />
-          <View style={styles.signInButtonContainer}>
-            <Button text="Sign In" onPress={logIn} />
+          <Text
+            style={[
+              styles.apiValidationText,
+              {
+                display: apiValidation ? "flex" : "none",
+              },
+            ]}
+          >
+            {apiValidation}
+          </Text>
+          <View style={styles.signUpButtonContainer}>
+            <Button text="Sign Up" onPress={createAccount} />
           </View>
           <View style={styles.signInContainer}>
-            <Text style={styles.haveAccountText}>
-              {"Don't have an account? "}
+            <Text style={styles.alreadyHaveAccountText}>
+              {"Already have an account? "}
             </Text>
-            <TouchableOpacity onPress={goToSignUp}>
-              <Text style={styles.signUpText}>Sign Up</Text>
+            <TouchableOpacity onPress={goToSignIn}>
+              <Text style={styles.signInText}>Sign In</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -102,16 +123,21 @@ const styles = StyleSheet.create({
   signInContainer: {
     flexDirection: "row",
   },
-  haveAccountText: {
+  alreadyHaveAccountText: {
     color: "#FFF",
     fontSize: 15,
   },
-  signUpText: {
+  signInText: {
     color: "#00d0ff",
     fontSize: 15,
     fontWeight: "700",
   },
-  signInButtonContainer: {
+  signUpButtonContainer: {
     marginVertical: 30,
+  },
+  apiValidationText: {
+    color: "red",
+    position: "absolute",
+    top: 0,
   },
 });
