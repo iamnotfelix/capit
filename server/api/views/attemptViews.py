@@ -2,25 +2,35 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from ..models.attempt import Attempt
-from ..serializers.attemptSerializer import AttemptSerializer
+from ..serializers.attemptSerializers import AddAttemptSerializer, AttemptSerializer
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-class GetAllAddAttemptsView(APIView):
+
+class GetAllAddAttemptsByUserView(APIView):
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        attempts = Attempt.objects.all()
+        attempts = Attempt.objects.filter(user=request.user.id)
         serializer = AttemptSerializer(attempts, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        serializer = AttemptSerializer(data=request.data)
+        serializer = AddAttemptSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            attempt = serializer.save()
+
+            print(attempt)
+            
+            return_serializer = AttemptSerializer(attempt)
+            return Response(return_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(return_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class GetByIdUpdateDeleteAttemptsView(APIView):
+    
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get_attempt(self, id):
         try:
@@ -46,6 +56,7 @@ class GetByIdUpdateDeleteAttemptsView(APIView):
         attempt.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+# https://thesis-s3-bucket.s3.amazonaws.com/strawberries_horizontal.jpeg
 
 ### Prediction code
 # img = Image.open(io.BytesIO(base64.b64decode(image)))

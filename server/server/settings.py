@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "graphene_django",
     "rest_framework",
-    # "rest_framework.authtoken",
+    "rest_framework.authtoken",
     "api",
 ]
 
@@ -107,6 +107,7 @@ DATABASES = {
 #     }
 # }
 
+AUTH_USER_MODEL = "api.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

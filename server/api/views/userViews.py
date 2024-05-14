@@ -1,12 +1,13 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from ..models.user import User
-from ..serializers.userSerializer import UserSerializer
-from rest_framework.views import APIView
+from ..serializers.userSerializers import UserSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def getall_add_user(request):
     if request.method == 'GET':
         users = User.objects.all()
@@ -22,6 +23,7 @@ def getall_add_user(request):
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def get_update_delete_user(request, id):
     try:
         user = User.objects.get(pk=id)
