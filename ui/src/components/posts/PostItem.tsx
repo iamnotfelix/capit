@@ -1,6 +1,5 @@
 import { View, StyleSheet } from "react-native";
 import { Post } from "../../models";
-import { Divider } from "react-native-elements";
 import { PostHeader } from "./PostHeader";
 import { PostFooter } from "./PostFooter";
 import { PostImage } from "./PostImage";
@@ -15,7 +14,6 @@ export const PostItem = (props: PostItem) => {
 
   return (
     <View style={layout.container}>
-      <Divider width={1} orientation="vertical" />
       <PostHeader username={post.user.username} created={post.created} />
       <PostImage
         imageUrl={`${process.env.S3_URL}${post.imageName}`}

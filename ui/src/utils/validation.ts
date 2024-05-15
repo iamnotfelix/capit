@@ -17,7 +17,7 @@ function validateUsername(username: string) {
   if (/^[a-zA-Z0-9_.]+$/.test(username) == false) {
     return {
       valid: false,
-      message: "Username can contain only letters, numbers, . and _",
+      message: "Invalid username",
     } as Validation;
   }
   return {

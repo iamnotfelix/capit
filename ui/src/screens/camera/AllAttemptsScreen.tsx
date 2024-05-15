@@ -18,6 +18,7 @@ import { useCanPostToday } from "../../hooks/posts/useCanPostToday";
 import { capitalizeAndDot } from "../../utils";
 import { Button } from "../../components/Button";
 import { usePostMutation } from "../../hooks/posts";
+import FastImage from "react-native-fast-image";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_MARGIN = 40;
@@ -143,7 +144,7 @@ export const AllAttemptsScreen = ({
                         index == attempts.length - 1 ? IMAGE_MARGIN : 0,
                     }}
                   >
-                    <Image
+                    <FastImage
                       source={{
                         uri: `${process.env.S3_URL}${attempt.imageName}`,
                       }}

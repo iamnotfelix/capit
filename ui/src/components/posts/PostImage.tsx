@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActivityIndicator, View, Image, StyleSheet, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import FastImage from "react-native-fast-image";
 
 type PostImageType = {
   imageUrl: string;
@@ -38,16 +39,16 @@ export const PostImage = (props: PostImageType) => {
         onLongPress={onImagePressIn}
         onPressOut={onImagePressOut}
       >
-        <Image
+        <FastImage
           source={{
             uri: imageUrl,
           }}
           style={{
             borderRadius: 10,
-            resizeMode: "cover",
             height: 350,
             opacity: isImagePressed ? 0.3 : 1,
           }}
+          resizeMode={FastImage.resizeMode.cover}
           onLoadStart={() => setIsLoading(true)}
           onLoadEnd={() => setIsLoading(false)}
         />

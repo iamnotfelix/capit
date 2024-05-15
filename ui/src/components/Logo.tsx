@@ -2,6 +2,7 @@ import { Image } from "react-native";
 
 type LogoVariant =
   | "whiteText"
+  | "whiteTextShadow"
   | "blueText"
   | "blackAndWhite"
   | "blackAndBlue"
@@ -21,6 +22,16 @@ export const Logo = (props: LogoPropsType) => {
       return (
         <Image
           source={require("../../assets/whiteText.png")}
+          style={{
+            height: height ? height : 300,
+            width: width ? width : 300,
+          }}
+        />
+      );
+    case "whiteTextShadow":
+      return (
+        <Image
+          source={require("../../assets/whiteTextShadow.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,

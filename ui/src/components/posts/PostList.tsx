@@ -1,6 +1,8 @@
 import { View, StyleSheet, FlatList } from "react-native";
 import { Post } from "../../models";
 import { PostItem } from "./PostItem";
+import { Header } from "../Header";
+import { Divider } from "react-native-elements";
 
 type PostListType = {
   posts: Post[];
@@ -15,10 +17,13 @@ export const PostList = (props: PostListType) => {
     <View style={layout.container}>
       <FlatList
         data={posts}
-        renderItem={({ item: post }) => <PostItem post={post} />}
+        renderItem={({ item: post, index }) => <PostItem post={post} />}
+        ItemSeparatorComponent={() => <Divider />}
         keyExtractor={(post) => post.id}
         refreshing={isRefreshing}
         onRefresh={onRefresh}
+        ListHeaderComponent={Header}
+        stickyHeaderIndices={[0]}
       />
     </View>
   );

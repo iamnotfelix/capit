@@ -28,8 +28,8 @@ export const CameraButton = ({ navigation }: CameraButtonType) => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 50,
-    left: 30,
+    bottom: 60,
+    left: 10,
     zIndex: 999,
     padding: 20,
     backgroundColor: "#000",
