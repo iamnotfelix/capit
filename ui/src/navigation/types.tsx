@@ -13,7 +13,9 @@ export type MainStackParamList = {
   Attempt: undefined;
   AllAttempts: undefined;
   Home: undefined;
-  Profile: undefined;
+  Profile: {
+    id: string;
+  };
 };
 
 // Prop types

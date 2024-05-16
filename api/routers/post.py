@@ -52,7 +52,7 @@ async def get_can_authenticated_user_post_today(
     return crud.get_can_user_post_today(db, user_id=user.id)
 
 
-@router.get("byuser/{user_id}", response_model=list[PostGet], dependencies=[Depends(auth.get_current_user)])
+@router.get("/byuser/{user_id}", response_model=list[PostGet], dependencies=[Depends(auth.get_current_user)])
 async def get_posts_by_user_id(
     db: Annotated[Session, Depends(get_db)],
     user_id: UUID,
@@ -60,7 +60,7 @@ async def get_posts_by_user_id(
     return crud.get_posts_by_user_id(db, user_id=user_id)
 
 
-@router.get("bypost/{post_id}", response_model=PostGet)
+@router.get("/bypost/{post_id}", response_model=PostGet)
 async def get_post_by_id(
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[UserGet, Depends(auth.get_current_user)],
@@ -74,7 +74,7 @@ async def get_post_by_id(
     return db_post
 
 
-@router.delete("me/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/me/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_authenticated_user_post_by_id(
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[UserGet, Depends(auth.get_current_user)],

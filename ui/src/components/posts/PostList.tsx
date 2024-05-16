@@ -1,29 +1,52 @@
 import { View, StyleSheet, FlatList } from "react-native";
 import { Post } from "../../models";
 import { PostItem } from "./PostItem";
-import { Header } from "../Header";
 import { Divider } from "react-native-elements";
 
 type PostListType = {
   posts: Post[];
   isRefreshing: boolean;
   onRefresh: () => void;
+  header?:
+    | React.ComponentType<any>
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+  isHeaderSticky?: boolean;
+  showActions: boolean;
+  onActionsPress?: (id: string) => void;
+  onProfilePress: (id: string) => void;
 };
 
 export const PostList = (props: PostListType) => {
-  const { posts, isRefreshing, onRefresh } = props;
+  const {
+    posts,
+    isRefreshing,
+    onRefresh,
+    header,
+    isHeaderSticky,
+    showActions,
+    onActionsPress,
+    onProfilePress,
+  } = props;
 
   return (
     <View style={layout.container}>
       <FlatList
         data={posts}
-        renderItem={({ item: post, index }) => <PostItem post={post} />}
+        renderItem={({ item: post }) => (
+          <PostItem
+            post={post}
+            showActions={showActions}
+            onActionsPress={onActionsPress}
+            onProfilePress={onProfilePress}
+          />
+        )}
         ItemSeparatorComponent={() => <Divider />}
         keyExtractor={(post) => post.id}
         refreshing={isRefreshing}
         onRefresh={onRefresh}
-        ListHeaderComponent={Header}
-        stickyHeaderIndices={[0]}
+        ListHeaderComponent={header ? header : <></>}
+        stickyHeaderIndices={isHeaderSticky ? [0] : []}
+        // ListEmptyComponent={} // TODO
       />
     </View>
   );

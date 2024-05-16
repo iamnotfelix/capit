@@ -22,10 +22,7 @@ export const useAttemptMutation = () => {
       // if cache empty there may be something in the backend
       if (!attempts || attempts.length == 0) {
         queryClient.invalidateQueries({
-          queryKey: attemptsKeys.attempts(token),
-        });
-        queryClient.invalidateQueries({
-          queryKey: attemptsKeys.attemptsLeft(token),
+          queryKey: attemptsKeys.allWithToken(token),
         });
       } else {
         queryClient.setQueryData(

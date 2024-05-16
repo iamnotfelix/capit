@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import uuid4, UUID
 from fastapi import HTTPException, status
 
-from ..database.models import Post, Attempt
+from ..database.models import Post, Attempt, User
 from ..models.post import PostCreate
 
 
@@ -31,12 +31,16 @@ def get_can_user_post_today(db: Session, user_id: UUID):
 
 def create_post(db: Session, post: PostCreate, user_id: UUID):
     db_attempt = db.query(Attempt).filter(Attempt.id == post.attempt_id).first()
+    db_user = db.query(User).filter(User.id == user_id).first()
 
     if db_attempt and db_attempt.user_id != user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permission.")
 
     if not db_attempt:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Attempt not found")
+    
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     db_post = Post(
         id=uuid4(),
@@ -48,6 +52,7 @@ def create_post(db: Session, post: PostCreate, user_id: UUID):
         theme_id=db_attempt.theme_id
     )
     db.add(db_post)
+    setattr(db_user, "score", db_attempt.score + db_user.score)
     db.commit()
     db.refresh(db_post)
 

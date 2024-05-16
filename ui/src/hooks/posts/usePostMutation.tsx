@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postsService } from "../../services";
 import { postsKeys } from "./postsKeys";
+import { usersKeys } from "../users";
 
 type PostMutationType = {
   attemptId: string;
@@ -15,7 +16,10 @@ export const usePostMutation = () => {
       postsService.addPost(attemptId, token),
     onSuccess: (_, { token }) => {
       queryClient.invalidateQueries({
-        queryKey: postsKeys.allPosts(token),
+        queryKey: postsKeys.allWithToken(token),
+      });
+      queryClient.invalidateQueries({
+        queryKey: usersKeys.allWithToken(token),
       });
 
       // set canPostToday to false

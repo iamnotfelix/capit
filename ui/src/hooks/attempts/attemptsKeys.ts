@@ -1,6 +1,7 @@
 export const attemptsKeys = {
   all: ["attempts"] as const,
-  attempts: (token: string) => [...attemptsKeys.all, "all", token] as const,
+  allWithToken: (token: string) => [...attemptsKeys.all, token] as const,
+  attempts: (token: string) => [...attemptsKeys.all, token, "all"] as const,
   attemptsLeft: (token: string) =>
-    [...attemptsKeys.all, "attemptsLeft", token] as const,
+    [...attemptsKeys.all, token, "attemptsLeft"] as const,
 };

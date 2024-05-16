@@ -7,6 +7,7 @@ import { LoadingIndicator } from "../../components/LoadingIndicator";
 import { postsKeys, useAllPosts, useCanPostToday } from "../../hooks/posts";
 import { PostList } from "../../components/posts";
 import { useQueryClient } from "@tanstack/react-query";
+import { Header } from "../../components/Header";
 
 export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
   const {
@@ -27,6 +28,10 @@ export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
     queryClient.invalidateQueries({
       queryKey: postsKeys.allPosts(token),
     });
+  };
+
+  const onProfilePress = (userId: string) => {
+    navigation.navigate("Profile", { id: userId });
   };
 
   const getIsLoading = () => {
@@ -51,6 +56,10 @@ export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
         posts={allPosts}
         onRefresh={onRefresh}
         isRefreshing={isAllPostsLoading}
+        header={Header}
+        isHeaderSticky={true}
+        showActions={false}
+        onProfilePress={onProfilePress}
       />
       <BottomTabBar currentScreen="Home" navigation={navigation} />
     </View>

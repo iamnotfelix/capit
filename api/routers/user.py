@@ -16,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=UserGet)
+@router.post("/", response_model=UserGet, dependencies=[Depends(auth.is_current_user_admin)])
 def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     db_user_email = crud.get_user_by_email(db, email=user.email)
     db_user_username = crud.get_user_by_username(db, username=user.username)
@@ -29,13 +29,13 @@ def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     return crud.create_user(db=db, user=user)
 
 
-@router.get("/", response_model=list[UserGet])
+@router.get("/", response_model=list[UserGet], dependencies=[Depends(auth.is_current_user_admin)])
 def get_all_users(db: Annotated[Session, Depends(get_db)], skip: int = 0, limit: int = 100):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
 
-@router.get("/{user_id}", response_model=UserGet)
+@router.get("/{user_id}", response_model=UserGet, dependencies=[Depends(auth.get_current_user)])
 def get_user_by_id(user_id: UUID, db: Annotated[Session, Depends(get_db)]):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
@@ -43,10 +43,10 @@ def get_user_by_id(user_id: UUID, db: Annotated[Session, Depends(get_db)]):
     return db_user
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(auth.is_current_user_admin)])
 def delete_user_by_id(user_id: UUID, db: Annotated[Session, Depends(get_db)]):
     crud.delete_user_by_id(db, user_id=user_id)
 
-@router.delete("/{username}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{username}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(auth.is_current_user_admin)])
 def delete_user_by_username(username: str, db: Annotated[Session, Depends(get_db)]):
     crud.delete_user_by_username(db, username=username)
