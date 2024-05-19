@@ -31,7 +31,7 @@ async def get_all_posts(
     skip: int = 0, 
     limit: int = 100,
 ):
-    return crud.get_posts(db, skip=skip, limit=limit)
+    return crud.get_posts(db=db, skip=skip, limit=limit)
 
 
 @router.get("/me", response_model=list[PostGet])
@@ -39,7 +39,15 @@ async def get_authenticated_user_posts(
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[UserGet, Depends(auth.get_current_user)],
 ):
-    return crud.get_posts_by_user_id(db, user_id=user.id)
+    return crud.get_posts_by_user_id(db=db, user_id=user.id)
+
+
+@router.get("/me/followings", response_model=list[PostGet])
+async def get_authenticated_user_followings_posts(
+    db: Annotated[Session, Depends(get_db)],
+    user: Annotated[UserGet, Depends(auth.get_current_user)],
+):
+    return crud.get_posts_by_user_followings(db=db, followings=user.followings)
 
 
 @router.get("/me/canposttoday", response_model=bool)
@@ -57,7 +65,7 @@ async def get_posts_by_user_id(
     db: Annotated[Session, Depends(get_db)],
     user_id: UUID,
 ):
-    return crud.get_posts_by_user_id(db, user_id=user_id)
+    return crud.get_posts_by_user_id(db=db, user_id=user_id)
 
 
 @router.get("/bypost/{post_id}", response_model=PostGet)
@@ -66,7 +74,7 @@ async def get_post_by_id(
     user: Annotated[UserGet, Depends(auth.get_current_user)],
     post_id: UUID, 
 ):
-    db_post = crud.get_post_by_id(db, post_id=post_id, user_id=user.id)
+    db_post = crud.get_post_by_id(db=db, post_id=post_id, user_id=user.id)
 
     if db_post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
@@ -75,9 +83,9 @@ async def get_post_by_id(
 
 
 @router.delete("/me/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_authenticated_user_post_by_id(
+async def delete_authenticated_user_post_by_id(
     db: Annotated[Session, Depends(get_db)],
     user: Annotated[UserGet, Depends(auth.get_current_user)],
     post_id: UUID,
 ):
-    crud.delete_post_by_id(db, post_id=post_id, user_id=user.id)
+    crud.delete_post_by_id(db=db, post_id=post_id, user_id=user.id)

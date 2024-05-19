@@ -35,6 +35,7 @@ export const TextField = (props: TextFieldPropsType) => {
         ]}
         placeholder={placeholder}
         placeholderTextColor={"#505050"}
+        autoCapitalize="none"
         secureTextEntry={!!secureTextEntry}
       />
     </View>

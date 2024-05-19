@@ -1,6 +1,7 @@
 from pydantic import UUID4
 from datetime import date
 from .base import Base
+from .follow import FollowerGetUser, FollowingGetUser
 
 
 class UserGet(Base):
@@ -11,6 +12,8 @@ class UserGet(Base):
     allowed_attempts: int
     is_admin: bool
     created: date
+    followers: list[FollowerGetUser]
+    followings: list[FollowingGetUser]
 
 
 class UserCreate(Base):
@@ -29,5 +32,10 @@ class UserSignUp(Base):
 
 
 class UserGetPost(Base):
+    id: UUID4
+    username: str
+
+
+class UserGetFollow(Base):
     id: UUID4
     username: str

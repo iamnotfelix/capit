@@ -4,7 +4,7 @@ import { usersService } from "../../services";
 
 export const useUserById = (userId: string, token: string) => {
   return useQuery({
-    queryKey: usersKeys.user(userId, token),
+    queryKey: usersKeys.userById(userId, token),
     queryFn: () => usersService.getUserById(userId, token),
   });
 };

@@ -1,19 +1,24 @@
 import { View, StyleSheet, Text } from "react-native";
 import { User } from "../../models";
 import FastImage from "react-native-fast-image";
-import { Button } from "../Button";
-import { useAuth } from "../../contexts/AuthContext";
+import { UserActions } from "./UserActions";
+import { Entypo } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useState } from "react";
 
 type UserProfilePropsType = {
   user: User;
   postCount: number;
   isCurrentUser: boolean;
+  isFollowing: boolean;
+  onSearchSuccess: (id: string) => void;
 };
 
 export const UserProfile = (props: UserProfilePropsType) => {
-  const { user, postCount, isCurrentUser } = props;
+  const { user, postCount, isCurrentUser, isFollowing, onSearchSuccess } =
+    props;
 
-  const { signOut } = useAuth();
+  const [showActions, setShowActions] = useState<boolean>(false);
 
   return (
     <View style={styles.container}>
@@ -41,18 +46,24 @@ export const UserProfile = (props: UserProfilePropsType) => {
           </Text>
         </View>
         <View style={styles.statContainer}>
-          <Text style={styles.statNameText}>Friends</Text>
-          <Text style={styles.statValueText}>{0}</Text>
+          <Text style={styles.statNameText}>Followers</Text>
+          <Text style={styles.statValueText}>{user.followers.length}</Text>
         </View>
       </View>
-      {isCurrentUser ? (
-        <View style={styles.actionContainer}>
-          <Button text="Sign Out" onPress={signOut} />
-        </View>
-      ) : (
-        <View style={styles.actionContainer}>
-          <Button text="Add Friend" onPress={() => {}} />
-        </View>
+      <TouchableOpacity onPress={() => setShowActions((old) => !old)}>
+        <Entypo
+          name={showActions ? "chevron-thin-up" : "chevron-thin-down"}
+          size={25}
+          color={"#fff"}
+        />
+      </TouchableOpacity>
+      {showActions && (
+        <UserActions
+          isCurrentUser={isCurrentUser}
+          isFollowing={isFollowing}
+          userId={user.id}
+          onSearchSuccess={onSearchSuccess}
+        />
       )}
     </View>
   );
@@ -76,19 +87,16 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     marginTop: 20,
-    flexDirection: "row-reverse",
-    justifyContent: "space-between",
+    flexDirection: "row",
     alignItems: "center",
     width: "80%",
   },
   statContainer: {
+    flex: 1,
     marginVertical: 10,
     alignItems: "center",
   },
-  actionContainer: {
-    marginVertical: 15,
-    width: "90%",
-  },
+
   usernameText: {
     color: "#FFF",
     fontSize: 25,

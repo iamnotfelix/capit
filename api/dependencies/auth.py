@@ -11,7 +11,7 @@ from uuid import uuid4
 
 from ..models.auth import TokenData
 from ..models.user import UserSignUp
-from .user import get_user_by_username, get_user
+from .user import get_user_by_username, get_user_by_id
 from .database import get_db
 from ..database.models import User
 
@@ -79,7 +79,7 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
     
-    user = get_user(db, user_id=token_data.id)
+    user = get_user_by_id(db, user_id=token_data.id)
     if user is None:
         raise credentials_exception
     

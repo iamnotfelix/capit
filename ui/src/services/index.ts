@@ -3,3 +3,4 @@ export * from "./attempts.service";
 export * from "./themes.service";
 export * from "./posts.service";
 export * from "./users.service";
+export * from "./follow.service";

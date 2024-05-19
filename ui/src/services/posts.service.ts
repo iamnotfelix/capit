@@ -7,6 +7,7 @@ export const postsService = {
   getCanPostToday,
   getPostsByUserId,
   deletePostById,
+  getFollowingsPosts,
 };
 
 function addPost(attemptId: string, token: string) {
@@ -52,6 +53,16 @@ function getPostsByUserId(userId: string, token: string) {
 function deletePostById(postId: string, token: string) {
   return axiosService
     .delete(`posts/me/${postId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => {
+      return response.data;
+    });
+}
+
+function getFollowingsPosts(token: string) {
+  return axiosService
+    .get<Post[]>(`posts/me/followings`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => {

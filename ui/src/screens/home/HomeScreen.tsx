@@ -4,7 +4,11 @@ import { BottomTabBar, CameraButton } from "../../components/navigation";
 import { MainStackScreenProps } from "../../navigation/types";
 import { useAttemptsLeft } from "../../hooks/attempts";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
-import { postsKeys, useAllPosts, useCanPostToday } from "../../hooks/posts";
+import {
+  postsKeys,
+  useCanPostToday,
+  useFollowingsPosts,
+} from "../../hooks/posts";
 import { PostList } from "../../components/posts";
 import { useQueryClient } from "@tanstack/react-query";
 import { Header } from "../../components/Header";
@@ -20,13 +24,14 @@ export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
   const queryClient = useQueryClient();
   const { data: attemptsLeft, isLoading: isAttemptsLeftLoading } =
     useAttemptsLeft(token);
-  const { data: allPosts, isLoading: isAllPostsLoading } = useAllPosts(token);
+  const { data: allPosts, isLoading: isAllPostsLoading } =
+    useFollowingsPosts(token);
   const { data: canPostToday, isLoading: isCanPostTodayLoading } =
     useCanPostToday(token);
 
   const onRefresh = () => {
     queryClient.invalidateQueries({
-      queryKey: postsKeys.allPosts(token),
+      queryKey: postsKeys.followingsPosts(token),
     });
   };
 

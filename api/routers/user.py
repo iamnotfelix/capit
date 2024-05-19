@@ -12,7 +12,6 @@ from ..dependencies import auth
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
-    dependencies=[Depends(auth.is_current_user_admin)]
 )
 
 
@@ -35,18 +34,26 @@ def get_all_users(db: Annotated[Session, Depends(get_db)], skip: int = 0, limit:
     return users
 
 
-@router.get("/{user_id}", response_model=UserGet, dependencies=[Depends(auth.get_current_user)])
+@router.get("/byuserid/{user_id}", response_model=UserGet, dependencies=[Depends(auth.get_current_user)])
 def get_user_by_id(user_id: UUID, db: Annotated[Session, Depends(get_db)]):
-    db_user = crud.get_user(db, user_id=user_id)
+    db_user = crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(auth.is_current_user_admin)])
+@router.get("/byusername/{username}", response_model=UserGet, dependencies=[Depends(auth.get_current_user)])
+def get_user_by_username(username: str, db: Annotated[Session, Depends(get_db)]):
+    db_user = crud.get_user_by_username(db, username=username)
+    if db_user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return db_user
+
+
+@router.delete("/byuserid/{user_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(auth.is_current_user_admin)])
 def delete_user_by_id(user_id: UUID, db: Annotated[Session, Depends(get_db)]):
     crud.delete_user_by_id(db, user_id=user_id)
 
-@router.delete("/{username}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(auth.is_current_user_admin)])
+@router.delete("/byusername/{username}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(auth.is_current_user_admin)])
 def delete_user_by_username(username: str, db: Annotated[Session, Depends(get_db)]):
     crud.delete_user_by_username(db, username=username)

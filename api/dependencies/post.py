@@ -3,7 +3,9 @@ from datetime import datetime
 from uuid import uuid4, UUID
 from fastapi import HTTPException, status
 
+
 from ..database.models import Post, Attempt, User
+from ..models.follow import FollowingGetUser
 from ..models.post import PostCreate
 
 
@@ -20,6 +22,16 @@ def get_post_by_id(db: Session, post_id: UUID, user_id: UUID):
 
 def get_posts_by_user_id(db: Session, user_id: UUID):
     return db.query(Post).filter(Post.user_id == user_id).all()
+
+
+def get_posts_by_user_followings(db: Session, followings: list[FollowingGetUser]):
+    db_posts = []
+    for following in followings:
+        db_post = db.query(Post).filter(Post.user_id == following.following_id).all()
+        db_posts.extend(db_post)
+    db_posts.sort(key=lambda post: post.created, reverse=True)
+
+    return db_posts
 
 
 def get_can_user_post_today(db: Session, user_id: UUID):

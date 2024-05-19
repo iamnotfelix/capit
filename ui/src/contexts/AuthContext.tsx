@@ -54,7 +54,6 @@ export const AuthProvider = ({ children }) => {
       // TODO: replace this async storage for a more secure one to store the token
       AsyncStorage.setItem("@AuthData", JSON.stringify(_auth));
     } catch (error) {
-      console.log("catch");
       setIsLoading(false);
       throw error;
     }

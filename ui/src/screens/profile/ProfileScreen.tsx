@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { BottomTabBar } from "../../components/navigation";
 import { MainStackScreenProps } from "../../navigation/types";
 import { useAuth } from "../../contexts/AuthContext";
@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { BurnModal, UserProfile } from "../../components/users";
 import { useDeletePostMutation } from "../../hooks/posts/useDeletePostMutation";
 import { useState } from "react";
+import { useIsFollowing } from "../../hooks/follows";
 
 export const ProfileScreen = ({
   navigation,
@@ -32,6 +33,10 @@ export const ProfileScreen = ({
     route.params.id,
     token
   );
+  const { data: isFollowing, isLoading: isFollowingLoading } = useIsFollowing(
+    route.params.id,
+    token
+  );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showBurnModal, setShowBurnModal] = useState<boolean>(false);
@@ -42,7 +47,7 @@ export const ProfileScreen = ({
       queryKey: postsKeys.postsByUserId(route.params.id, token),
     });
     queryClient.invalidateQueries({
-      queryKey: usersKeys.user(route.params.id, token),
+      queryKey: usersKeys.userById(route.params.id, token),
     });
   };
 
@@ -68,8 +73,12 @@ export const ProfileScreen = ({
     navigation.navigate("Profile", { id: userId });
   };
 
+  const onSearchSuccess = (userId: string) => {
+    navigation.navigate("Profile", { id: userId });
+  };
+
   const getIsLoading = () => {
-    return isUserLoading || isPostsLoading || isLoading;
+    return isUserLoading || isPostsLoading || isLoading || isFollowingLoading;
   };
 
   if (getIsLoading()) {
@@ -94,10 +103,12 @@ export const ProfileScreen = ({
             user={user}
             postCount={posts.length}
             isCurrentUser={currentUserId === route.params.id}
+            onSearchSuccess={onSearchSuccess}
+            isFollowing={isFollowing}
           />
         )}
         isHeaderSticky={false}
-        showActions={true}
+        showActions={currentUserId == route.params.id}
         onActionsPress={onActionPress}
         onProfilePress={onProfilePress}
       />

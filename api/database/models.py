@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, UUID, Float, Date
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, UUID, Float, Date, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -19,6 +19,8 @@ class User(Base):
     attempts = relationship("Attempt", back_populates="user")
     themes = relationship("Theme", back_populates="user")
     posts = relationship("Post", back_populates="user")
+    followers = relationship("Follow", foreign_keys="Follow.following_id", back_populates="following")
+    followings = relationship("Follow", foreign_keys="Follow.follower_id", back_populates="follower")
 
 
 class Attempt(Base):
@@ -66,3 +68,16 @@ class Post(Base):
 
     theme_id = Column(UUID, ForeignKey("themes.id"), nullable=False)
     theme = relationship("Theme", back_populates="posts")
+
+
+class Follow(Base):
+    __tablename__ = "follows"
+
+    id = Column(UUID, primary_key=True, nullable=False)
+    created = Column(DateTime, nullable=False)
+
+    follower_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+    follower = relationship("User", foreign_keys=[follower_id], back_populates="followings")
+
+    following_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+    following = relationship("User", foreign_keys=[following_id], back_populates="followers")

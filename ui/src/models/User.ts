@@ -1,3 +1,5 @@
+import { Follower, Following } from "./Follow";
+
 export type User = {
   id: string;
   username: string;
@@ -6,6 +8,8 @@ export type User = {
   allowedAttempts: number;
   isAdmin: boolean;
   created: Date;
+  followers: Follower[];
+  followings: Following[];
 };
 
 export type UserGetPost = {
