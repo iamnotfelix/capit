@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -11,7 +11,11 @@ import {
 } from "react-native";
 import { MainStackScreenProps } from "../../navigation/types";
 import { CloseButton } from "../../components/camera";
-import { useAttempts, useAttemptsLeft } from "../../hooks/attempts";
+import {
+  attemptsKeys,
+  useAttempts,
+  useAttemptsLeft,
+} from "../../hooks/attempts";
 import { useAuth } from "../../contexts/AuthContext";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
 import { useCanPostToday } from "../../hooks/posts/useCanPostToday";
@@ -19,6 +23,7 @@ import { capitalizeAndDot } from "../../utils";
 import { Button } from "../../components/Button";
 import { usePostMutation } from "../../hooks/posts";
 import FastImage from "react-native-fast-image";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_MARGIN = 40;
@@ -36,12 +41,20 @@ export const AllAttemptsScreen = ({
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isAddingPost, setIsAddingPost] = useState<boolean>(false);
 
+  const queryClient = useQueryClient();
   const postMutation = usePostMutation();
   const { data: attempts, isLoading: isAttemptsLoading } = useAttempts(token);
   const { data: attemptsLeft, isLoading: isAtttemptsLeftLoading } =
     useAttemptsLeft(token);
   const { data: canPostToday, isLoading: isCanPostTodayLoading } =
     useCanPostToday(token);
+
+  // TODO: this is a quick fix for the attempts problem
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: attemptsKeys.attempts(token),
+    });
+  }, []);
 
   const onScroll = (data: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = Math.round(data.nativeEvent.contentOffset.x / IMAGE_WIDTH);

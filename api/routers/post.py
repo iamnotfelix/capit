@@ -3,7 +3,11 @@ from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from uuid import UUID
 
+
+
+from ..ml.load import get_s3
 from ..dependencies.database import get_db
+from ..dependencies.s3 import S3Client
 from ..models.post import PostCreate, PostGet
 from ..models.user import UserGet
 from ..dependencies import post as crud
@@ -85,7 +89,8 @@ async def get_post_by_id(
 @router.delete("/me/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_authenticated_user_post_by_id(
     db: Annotated[Session, Depends(get_db)],
+    s3: Annotated[S3Client, Depends(get_s3)],
     user: Annotated[UserGet, Depends(auth.get_current_user)],
     post_id: UUID,
 ):
-    crud.delete_post_by_id(db=db, post_id=post_id, user_id=user.id)
+    crud.delete_post_by_id(db=db, s3=s3, post_id=post_id, user_id=user.id)

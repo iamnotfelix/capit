@@ -2,6 +2,7 @@ import { View, StyleSheet, FlatList } from "react-native";
 import { Post } from "../../models";
 import { PostItem } from "./PostItem";
 import { Divider } from "react-native-elements";
+import { NoPosts } from "./NoPosts";
 
 type PostListType = {
   posts: Post[];
@@ -46,7 +47,8 @@ export const PostList = (props: PostListType) => {
         onRefresh={onRefresh}
         ListHeaderComponent={header ? header : <></>}
         stickyHeaderIndices={isHeaderSticky ? [0] : []}
-        // ListEmptyComponent={} // TODO
+        ListEmptyComponent={NoPosts}
+        // ListFooterComponent={} // TODO
       />
     </View>
   );

@@ -19,3 +19,7 @@ class S3Client(object):
         file_byte_string = self.s3.get_object(Bucket=self.bucket, Key=key)['Body'].read()
         return Image.open(BytesIO(file_byte_string))
     
+    
+    def delete(self, key):
+        self.s3.delete_object(Bucket=self.bucket, Key=key)
+    

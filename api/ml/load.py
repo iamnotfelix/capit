@@ -21,7 +21,7 @@ def load_model(with_cuda=True):
     model = ImageCaptioner(
         s3_client=s3_client,
         # checkpoint_path=os.path.join('static', 'model.pth.tar'),
-        checkpoint_path='C:\\Users\\andre\\Desktop\\folders\\thesis\\project\\api\\static\\model_.pth.tar',
+        checkpoint_path='C:\\Users\\andre\\Desktop\\folders\\thesis\\project\\api\\static\\model.pth.tar',
         # word_map_path=os.path.join('static', 'wordmap.json'),
         word_map_path='C:\\Users\\andre\\Desktop\\folders\\thesis\\project\\api\\static\\wordmap.json',
         with_cuda=with_cuda,
@@ -37,3 +37,14 @@ def get_model():
 def get_scorer():
     rouge = Rouge()
     return rouge
+
+
+@lru_cache
+def get_s3():
+    s3_client = S3Client(
+        aws_access_key_id=os.environ.get('ACCESS_KEY_ID'),
+        aws_secret_access_key=os.environ.get('SECRET_ACCESS_KEY'),
+        region_name=os.environ.get('REGION'),
+        bucket=os.environ.get('BUCKET'),
+    )
+    return s3_client

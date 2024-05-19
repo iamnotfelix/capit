@@ -14,33 +14,20 @@ export const useAttemptMutation = () => {
   return useMutation({
     mutationFn: ({ imageName, token }: AttemptMutationType) =>
       attemptsService.addAttempt(imageName, token),
-    onSuccess: (attempt, { token }) => {
-      const attempts: Attempt[] = queryClient.getQueryData(
-        attemptsKeys.attempts(token)
+    onSuccess: (_, { token }) => {
+      queryClient.invalidateQueries({
+        queryKey: attemptsKeys.attempts(token),
+      });
+
+      queryClient.setQueryData(
+        attemptsKeys.attemptsLeft(token),
+        (attemptsLeft: number) => {
+          return attemptsLeft - 1;
+        }
       );
+      // TODO
       // invalidate query if there is nothing in the cache
       // if cache empty there may be something in the backend
-      if (!attempts || attempts.length == 0) {
-        queryClient.invalidateQueries({
-          queryKey: attemptsKeys.allWithToken(token),
-        });
-      } else {
-        queryClient.setQueryData(
-          attemptsKeys.attempts(token),
-          (attempts: Attempt[]) => {
-            if (attempts) {
-              return [...attempts, attempt];
-            }
-            return [attempt];
-          }
-        );
-        queryClient.setQueryData(
-          attemptsKeys.attemptsLeft(token),
-          (attemptsLeft: number) => {
-            return attemptsLeft - 1;
-          }
-        );
-      }
     },
   });
 };

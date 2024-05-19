@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import uuid4, UUID
 from fastapi import HTTPException, status
 
-
+from ..dependencies.s3 import S3Client
 from ..database.models import Post, Attempt, User
 from ..models.follow import FollowingGetUser
 from ..models.post import PostCreate
@@ -21,7 +21,9 @@ def get_post_by_id(db: Session, post_id: UUID, user_id: UUID):
 
 
 def get_posts_by_user_id(db: Session, user_id: UUID):
-    return db.query(Post).filter(Post.user_id == user_id).all()
+    db_posts = db.query(Post).filter(Post.user_id == user_id).all()
+    db_posts.sort(key=lambda post: post.created, reverse=True)
+    return db_posts
 
 
 def get_posts_by_user_followings(db: Session, followings: list[FollowingGetUser]):
@@ -71,7 +73,7 @@ def create_post(db: Session, post: PostCreate, user_id: UUID):
     return db_post
 
 
-def delete_post_by_id(db: Session, post_id: UUID, user_id: UUID):
+def delete_post_by_id(db: Session, s3: S3Client, post_id: UUID, user_id: UUID):
     db_post = db.query(Post).filter(Post.id == post_id).first()
 
     if db_post and db_post.user_id != user_id:
@@ -80,5 +82,7 @@ def delete_post_by_id(db: Session, post_id: UUID, user_id: UUID):
     if not db_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
+    s3.delete(db_post.image_name)
     db.delete(db_post)
     db.commit()
+
