@@ -1,13 +1,12 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { AuthStackScreenProps } from "../../navigation/types";
-import { Logo } from "../../components/Logo";
-import { Button } from "../../components/Button";
 import { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import { validation } from "../../utils/validation";
-import { useValidation } from "../../hooks/form";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 import { TextField, ValidationText } from "../../components/form";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
+import { Button, LoadingIndicator, Logo } from "../../components/shared";
+import { useAuth } from "../../contexts/AuthContext";
+import { useValidation } from "../../hooks/form";
+import { AuthStackScreenProps } from "../../navigation/types";
+import { validation } from "../../utils/validation";
 
 export const SignInScreen = ({
   navigation,

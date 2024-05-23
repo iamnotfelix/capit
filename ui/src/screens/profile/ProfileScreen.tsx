@@ -1,21 +1,27 @@
-import { View, StyleSheet } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
+
+import { useQueryClient } from "@tanstack/react-query";
+
 import { BottomTabBar } from "../../components/navigation";
-import { MainStackScreenProps } from "../../navigation/types";
+import { PostList } from "../../components/posts";
+import {
+  GenericModal,
+  LoadingIndicator,
+  ModalButton,
+} from "../../components/shared";
+import { UserProfile } from "../../components/users";
 import { useAuth } from "../../contexts/AuthContext";
+import { useIsFollowing } from "../../hooks/follows";
+import { postsKeys, usePostByUserId } from "../../hooks/posts";
+import { useDeletePostMutation } from "../../hooks/posts/useDeletePostMutation";
 import {
   usersKeys,
   useUpdateProfileImageMutation,
   useUserById,
 } from "../../hooks/users";
-import { postsKeys, usePostByUserId } from "../../hooks/posts";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
-import { PostList } from "../../components/posts";
-import { useQueryClient } from "@tanstack/react-query";
-import { BurnModal, UserProfile } from "../../components/users";
-import { useDeletePostMutation } from "../../hooks/posts/useDeletePostMutation";
-import { useState } from "react";
-import { useIsFollowing } from "../../hooks/follows";
-import * as ImagePicker from "expo-image-picker";
+import { MainStackScreenProps } from "../../navigation/types";
 import { uploadToS3 } from "../../utils";
 
 export const ProfileScreen = ({
@@ -47,6 +53,8 @@ export const ProfileScreen = ({
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showBurnModal, setShowBurnModal] = useState<boolean>(false);
+  const [showProfileImageModal, setShowProfileImageModal] =
+    useState<boolean>(false);
   const [selectedPost, setSelectedPost] = useState<string>(undefined);
 
   const onRefresh = () => {
@@ -71,7 +79,7 @@ export const ProfileScreen = ({
     setSelectedPost(undefined);
   };
 
-  const onCancel = () => {
+  const onCancelBurn = () => {
     setShowBurnModal(false);
     setSelectedPost(undefined);
   };
@@ -84,7 +92,23 @@ export const ProfileScreen = ({
     navigation.navigate("Profile", { id: userId });
   };
 
-  const onChangeProfileImage = async () => {
+  const onRemoveProfileImage = async () => {
+    try {
+      setIsLoading(true);
+      await updateProfileImageMutation.mutateAsync({
+        profileImage: "",
+        token,
+        currentUserId,
+      });
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
+
+  const onUpdateProfileImage = async () => {
+    setShowProfileImageModal(false);
+
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -125,12 +149,46 @@ export const ProfileScreen = ({
 
   return (
     <View style={layout.container}>
-      <BurnModal
-        text={"Do you want to burn the post?"}
+      <GenericModal
+        title="Change profile image"
+        content={"Do you want to change your profile image?"}
+        isVisible={showProfileImageModal}
+        onClose={() => setShowProfileImageModal(false)}
+        actions={
+          <View style={layout.actionsContainer}>
+            <ModalButton
+              text="Cancel"
+              variant="default"
+              onPress={() => setShowProfileImageModal(false)}
+            />
+            <ModalButton
+              text="Remove"
+              variant="error"
+              onPress={onRemoveProfileImage}
+            />
+            <ModalButton
+              text="Upload"
+              variant="active"
+              onPress={onUpdateProfileImage}
+            />
+          </View>
+        }
+      />
+      <GenericModal
+        title="Warning"
+        content={"Do you want to burn the post?"}
         isVisible={showBurnModal}
-        onRequestClose={onCancel}
-        onBurn={onBurn}
-        onCancel={onCancel}
+        onClose={onCancelBurn}
+        actions={
+          <View style={layout.actionsContainer}>
+            <ModalButton
+              text="Cancel"
+              variant="default"
+              onPress={onCancelBurn}
+            />
+            <ModalButton text="Burn" variant="error" onPress={onBurn} />
+          </View>
+        }
       />
       <PostList
         posts={posts}
@@ -143,7 +201,7 @@ export const ProfileScreen = ({
             isCurrentUser={currentUserId === route.params.id}
             isFollowing={isFollowing}
             onSearchSuccess={onSearchSuccess}
-            onProfilePress={onChangeProfileImage}
+            onProfilePress={() => setShowProfileImageModal(true)}
           />
         )}
         isHeaderSticky={false}
@@ -166,5 +224,12 @@ const layout = StyleSheet.create({
   signoutContainer: {
     justifyContent: "center",
     alignItems: "center",
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    columnGap: 10,
+    width: "100%",
   },
 });

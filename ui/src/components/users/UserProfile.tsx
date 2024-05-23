@@ -1,10 +1,12 @@
-import { View, StyleSheet, Text } from "react-native";
-import { User } from "../../models";
-import FastImage from "react-native-fast-image";
-import { UserActions } from "./UserActions";
-import { Entypo } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import FastImage from "react-native-fast-image";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
+import { Entypo } from "@expo/vector-icons";
+
+import { User } from "../../models";
+import { UserActions } from "./UserActions";
 
 type UserProfilePropsType = {
   user: User;

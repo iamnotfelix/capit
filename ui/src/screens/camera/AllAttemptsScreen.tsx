@@ -1,29 +1,30 @@
 import { useEffect, useState } from "react";
 import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
   Dimensions,
-  NativeSyntheticEvent,
+  Image,
   NativeScrollEvent,
+  NativeSyntheticEvent,
   ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { MainStackScreenProps } from "../../navigation/types";
+import FastImage from "react-native-fast-image";
+
+import { useQueryClient } from "@tanstack/react-query";
+
 import { CloseButton } from "../../components/camera";
+import { Button, LoadingIndicator } from "../../components/shared";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   attemptsKeys,
   useAttempts,
   useAttemptsLeft,
 } from "../../hooks/attempts";
-import { useAuth } from "../../contexts/AuthContext";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
-import { useCanPostToday } from "../../hooks/posts/useCanPostToday";
-import { capitalizeAndDot } from "../../utils";
-import { Button } from "../../components/Button";
 import { usePostMutation } from "../../hooks/posts";
-import FastImage from "react-native-fast-image";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCanPostToday } from "../../hooks/posts/useCanPostToday";
+import { MainStackScreenProps } from "../../navigation/types";
+import { capitalizeAndDot } from "../../utils";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const IMAGE_MARGIN = 40;

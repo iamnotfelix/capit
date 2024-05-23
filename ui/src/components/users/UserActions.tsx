@@ -1,15 +1,17 @@
-import { View, StyleSheet, ActivityIndicator } from "react-native";
-import { Button } from "../Button";
-import { TextField } from "../form";
-import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
-import { AntDesign } from "@expo/vector-icons";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { usersService } from "../../services";
+
+import { AntDesign } from "@expo/vector-icons";
+
+import { useAuth } from "../../contexts/AuthContext";
 import {
   useDeleteFollowMutation,
   useFollowMutation,
 } from "../../hooks/follows";
+import { usersService } from "../../services";
+import { TextField } from "../form";
+import { Button, GenericModal, ModalButton } from "../shared";
 
 type UserActionsPropsType = {
   isCurrentUser: boolean;
@@ -34,6 +36,7 @@ export const UserActions = (props: UserActionsPropsType) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchValText, setSearchValText] = useState<string>(undefined);
   const [search, setSearch] = useState<string>(undefined);
+  const [showSignOutModal, setShowSignOutModal] = useState<boolean>(false);
 
   const onSearch = async () => {
     try {
@@ -47,11 +50,31 @@ export const UserActions = (props: UserActionsPropsType) => {
     }
   };
 
+  const onCancel = () => {
+    setShowSignOutModal(false);
+  };
+
+  const onSignOut = () => {
+    setShowSignOutModal(true);
+  };
+
   return (
     <View style={styles.container}>
+      <GenericModal
+        title="Warning"
+        content={"Do you want to sign out?"}
+        isVisible={showSignOutModal}
+        onClose={onCancel}
+        actions={
+          <View style={styles.modalButtonsContainer}>
+            <ModalButton text="Cancel" variant="default" onPress={onCancel} />
+            <ModalButton text="Sign Out" variant="error" onPress={signOut} />
+          </View>
+        }
+      />
       {isCurrentUser ? (
         <View style={styles.actionContainer}>
-          <Button text="Sign Out" onPress={signOut} />
+          <Button text="Sign Out" onPress={onSignOut} />
           <View style={styles.searchContainer}>
             <View style={styles.searchFieldContainer}>
               <TextField
@@ -104,6 +127,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     alignItems: "center",
     justifyContent: "center",
+  },
+  modalButtonsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    columnGap: 10,
+    width: "100%",
   },
   actionContainer: {
     marginVertical: 15,

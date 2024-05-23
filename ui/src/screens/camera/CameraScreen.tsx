@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import {
   Camera,
   CameraPosition,
@@ -7,28 +7,26 @@ import {
   useCameraDevice,
   useCameraPermission,
 } from "react-native-vision-camera";
+
+import { useAppState } from "@react-native-community/hooks";
+import { useIsFocused } from "@react-navigation/native";
+
 import {
   CameraButton,
   CloseButton,
   NoCameraPermission,
 } from "../../components/camera";
-import { uploadToS3 } from "../../utils";
-import { useIsFocused } from "@react-navigation/native";
-import { useAppState } from "@react-native-community/hooks";
-import { MainStackScreenProps } from "../../navigation/types";
+import { GenericModal, LoadingIndicator } from "../../components/shared";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCameraData } from "../../contexts/CameraDataContext";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
 import { useAttemptMutation } from "../../hooks/attempts";
-import { ThemeModal } from "../../components/themes/ThemeModal";
 import { useTodaysTheme } from "../../hooks/themes";
+import { MainStackScreenProps } from "../../navigation/types";
+import { capitalizeAndDot, uploadToS3 } from "../../utils";
 
 export const CameraScreen = ({
   navigation,
 }: MainStackScreenProps<"Camera">) => {
-  // const route = useRoute<CameraStackScreenProps<"Camera">["route"]>();
-  // const navigation = useNavigation<CameraStackScreenProps<"Camera">["navigation"]>();
-
   const { auth } = useAuth();
   const { setPhotoPath, setAttempt } = useCameraData();
   const cameraRef = useRef<Camera>(null);
@@ -139,11 +137,12 @@ export const CameraScreen = ({
 
   return (
     <View style={layout.container}>
-      <ThemeModal
-        text={theme.main}
+      <GenericModal
+        title="Theme of the day"
+        content={capitalizeAndDot(theme.main)}
         isVisible={isThemeModalVisble}
-        onRequestClose={() => setIsThemeModalVisible(false)}
-        onPress={() => setIsThemeModalVisible(false)}
+        onClose={() => setIsThemeModalVisible(false)}
+        actions={<></>}
       />
       <>
         <Camera

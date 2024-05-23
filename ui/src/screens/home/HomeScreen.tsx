@@ -1,17 +1,18 @@
-import { View, StyleSheet } from "react-native";
-import { useAuth } from "../../contexts/AuthContext";
+import { StyleSheet, View } from "react-native";
+
+import { useQueryClient } from "@tanstack/react-query";
+
 import { BottomTabBar, CameraButton } from "../../components/navigation";
-import { MainStackScreenProps } from "../../navigation/types";
+import { PostList } from "../../components/posts";
+import { Header, LoadingIndicator } from "../../components/shared";
+import { useAuth } from "../../contexts/AuthContext";
 import { useAttemptsLeft } from "../../hooks/attempts";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
 import {
   postsKeys,
   useCanPostToday,
   useFollowingsPosts,
 } from "../../hooks/posts";
-import { PostList } from "../../components/posts";
-import { useQueryClient } from "@tanstack/react-query";
-import { Header } from "../../components/Header";
+import { MainStackScreenProps } from "../../navigation/types";
 
 export const HomeScreen = ({ navigation }: MainStackScreenProps<"Home">) => {
   const {

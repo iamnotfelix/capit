@@ -1,8 +1,8 @@
-import { View, StyleSheet, Text, Image } from "react-native";
-import { Button } from "../../components/Button";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+
+import { Button, Logo } from "../../components/shared";
 import { AuthStackScreenProps } from "../../navigation/types";
-import { Logo } from "../../components/Logo";
 
 export const WelcomeScreen = ({
   navigation,

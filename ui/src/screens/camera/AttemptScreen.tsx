@@ -1,13 +1,13 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { CloseButton } from "../../components/camera";
-import { useCameraData } from "../../contexts/CameraDataContext";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 import { ImageItem } from "../../components/attempts";
-import { MainStackScreenProps } from "../../navigation/types";
-import { useAttemptsLeft } from "../../hooks/attempts";
+import { CloseButton } from "../../components/camera";
+import { Button, LoadingIndicator } from "../../components/shared";
 import { useAuth } from "../../contexts/AuthContext";
-import { LoadingIndicator } from "../../components/LoadingIndicator";
+import { useCameraData } from "../../contexts/CameraDataContext";
+import { useAttemptsLeft } from "../../hooks/attempts";
+import { MainStackScreenProps } from "../../navigation/types";
 import { capitalizeAndDot } from "../../utils";
-import { Button } from "../../components/Button";
 
 export const AttemptScreen = ({
   navigation,

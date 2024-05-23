@@ -21,7 +21,7 @@ export const Logo = (props: LogoPropsType) => {
     case "whiteText":
       return (
         <Image
-          source={require("../../assets/whiteText.png")}
+          source={require("../../../assets/whiteText.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
@@ -31,7 +31,7 @@ export const Logo = (props: LogoPropsType) => {
     case "whiteTextShadow":
       return (
         <Image
-          source={require("../../assets/whiteTextShadow.png")}
+          source={require("../../../assets/whiteTextShadow.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
@@ -41,7 +41,7 @@ export const Logo = (props: LogoPropsType) => {
     case "blueText":
       return (
         <Image
-          source={require("../../assets/blueText.png")}
+          source={require("../../../assets/blueText.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
@@ -51,7 +51,7 @@ export const Logo = (props: LogoPropsType) => {
     case "blackAndWhite":
       return (
         <Image
-          source={require("../../assets/blackAndWhite.png")}
+          source={require("../../../assets/blackAndWhite.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
@@ -61,7 +61,7 @@ export const Logo = (props: LogoPropsType) => {
     case "blackAndBlue":
       return (
         <Image
-          source={require("../../assets/blackAndBlue.png")}
+          source={require("../../../assets/blackAndBlue.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
@@ -71,7 +71,7 @@ export const Logo = (props: LogoPropsType) => {
     case "whiteAndBlack":
       return (
         <Image
-          source={require("../../assets/whiteAndBlack.png")}
+          source={require("../../../assets/whiteAndBlack.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
@@ -81,7 +81,7 @@ export const Logo = (props: LogoPropsType) => {
     case "whiteAndBlue":
       return (
         <Image
-          source={require("../../assets/whiteAndBlue.png")}
+          source={require("../../../assets/whiteAndBlue.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
@@ -91,7 +91,7 @@ export const Logo = (props: LogoPropsType) => {
     default:
       return (
         <Image
-          source={require("../../assets/whiteText.png")}
+          source={require("../../../assets/whiteText.png")}
           style={{
             height: height ? height : 300,
             width: width ? width : 300,
