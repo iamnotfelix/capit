@@ -22,8 +22,9 @@ export const PostItem = (props: PostItem) => {
         created={post.created}
         showActions={showActions}
         postId={post.id}
-        onActionsPress={onActionsPress}
         userId={post.user.id}
+        profileImage={post.user.profileImage}
+        onActionsPress={onActionsPress}
         onProfilePress={onProfilePress}
       />
       <PostImage

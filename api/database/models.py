@@ -15,6 +15,7 @@ class User(Base):
     allowed_attempts = Column(Integer, default=3, nullable=False)
     is_admin = Column(Boolean, default=False, nullable=False)
     created = Column(Date, nullable=False)
+    profile_image = Column(String, nullable=True)
 
     attempts = relationship("Attempt", back_populates="user")
     themes = relationship("Theme", back_populates="user")

@@ -12,6 +12,7 @@ class UserGet(Base):
     allowed_attempts: int
     is_admin: bool
     created: date
+    profile_image: str
     followers: list[FollowerGetUser]
     followings: list[FollowingGetUser]
 
@@ -34,8 +35,13 @@ class UserSignUp(Base):
 class UserGetPost(Base):
     id: UUID4
     username: str
+    profile_image: str
 
 
 class UserGetFollow(Base):
     id: UUID4
     username: str
+
+
+class UserUpdateProfileImage(Base):
+    profile_image: str

@@ -34,12 +34,26 @@ def create_user(db: Session, user: UserCreate):
         score=user.score,
         allowed_attempts=user.allowed_attempts,
         is_admin = user.is_admin,
-        created = datetime.now()
+        created = datetime.now(),
+        profile_image = "",
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     
+    return db_user
+
+
+def update_user_profile_image(db: Session, user_id: UUID, profile_image: str):
+    db_user = db.query(User).filter(User.id == user_id).first()
+
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    setattr(db_user, "profile_image", profile_image)
+    db.commit()
+    db.refresh(db_user)
+
     return db_user
 
 

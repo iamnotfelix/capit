@@ -2,7 +2,11 @@ import { View, StyleSheet } from "react-native";
 import { BottomTabBar } from "../../components/navigation";
 import { MainStackScreenProps } from "../../navigation/types";
 import { useAuth } from "../../contexts/AuthContext";
-import { usersKeys, useUserById } from "../../hooks/users";
+import {
+  usersKeys,
+  useUpdateProfileImageMutation,
+  useUserById,
+} from "../../hooks/users";
 import { postsKeys, usePostByUserId } from "../../hooks/posts";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
 import { PostList } from "../../components/posts";
@@ -11,6 +15,8 @@ import { BurnModal, UserProfile } from "../../components/users";
 import { useDeletePostMutation } from "../../hooks/posts/useDeletePostMutation";
 import { useState } from "react";
 import { useIsFollowing } from "../../hooks/follows";
+import * as ImagePicker from "expo-image-picker";
+import { uploadToS3 } from "../../utils";
 
 export const ProfileScreen = ({
   navigation,
@@ -25,6 +31,7 @@ export const ProfileScreen = ({
 
   const queryClient = useQueryClient();
   const deletePostMutation = useDeletePostMutation();
+  const updateProfileImageMutation = useUpdateProfileImageMutation();
   const { data: user, isLoading: isUserLoading } = useUserById(
     route.params.id,
     token
@@ -77,6 +84,37 @@ export const ProfileScreen = ({
     navigation.navigate("Profile", { id: userId });
   };
 
+  const onChangeProfileImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      setIsLoading(true);
+
+      const image = await fetch(result.assets[0].uri);
+      const blob = await image.blob();
+      const { key, error } = await uploadToS3(blob, currentUserId);
+
+      if (error) {
+        setIsLoading(false);
+        return;
+      }
+
+      await updateProfileImageMutation.mutateAsync({
+        profileImage: key,
+        token,
+        currentUserId,
+      });
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
+
   const getIsLoading = () => {
     return isUserLoading || isPostsLoading || isLoading || isFollowingLoading;
   };
@@ -103,8 +141,9 @@ export const ProfileScreen = ({
             user={user}
             postCount={posts.length}
             isCurrentUser={currentUserId === route.params.id}
-            onSearchSuccess={onSearchSuccess}
             isFollowing={isFollowing}
+            onSearchSuccess={onSearchSuccess}
+            onProfilePress={onChangeProfileImage}
           />
         )}
         isHeaderSticky={false}

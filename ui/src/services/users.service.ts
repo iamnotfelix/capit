@@ -4,6 +4,7 @@ import axiosService from "../utils/axios";
 export const usersService = {
   getUserById,
   getUserByUsername,
+  updateProfileImage,
 };
 
 function getUserById(userId: string, token: string) {
@@ -21,6 +22,20 @@ function getUserByUsername(username: string, token: string) {
     .get<User>(`users/byusername/${username}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
+    .then((response) => {
+      return response.data;
+    });
+}
+
+function updateProfileImage(profileImage: string, token: string) {
+  return axiosService
+    .put<User>(
+      `users/profileimage`,
+      { profileImage },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
     .then((response) => {
       return response.data;
     });

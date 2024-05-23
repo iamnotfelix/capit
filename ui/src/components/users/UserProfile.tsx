@@ -12,11 +12,18 @@ type UserProfilePropsType = {
   isCurrentUser: boolean;
   isFollowing: boolean;
   onSearchSuccess: (id: string) => void;
+  onProfilePress: () => void;
 };
 
 export const UserProfile = (props: UserProfilePropsType) => {
-  const { user, postCount, isCurrentUser, isFollowing, onSearchSuccess } =
-    props;
+  const {
+    user,
+    postCount,
+    isCurrentUser,
+    isFollowing,
+    onSearchSuccess,
+    onProfilePress,
+  } = props;
 
   const [showActions, setShowActions] = useState<boolean>(false);
 
@@ -26,13 +33,19 @@ export const UserProfile = (props: UserProfilePropsType) => {
         <Text style={styles.usernameText}>@{user.username}</Text>
       </View>
       <View style={styles.profilePictureContainer}>
-        <FastImage
-          source={{
-            uri: `${process.env.S3_URL}9775c3f0-296d-4fcc-aa3c-bb8bf59a3ee6/dc5dfbfb-8e8e-4b8f-97f9-3fb5eac125e4.jpeg`,
-          }}
-          style={styles.profilePicture}
-          resizeMode={FastImage.resizeMode.cover}
-        />
+        <TouchableOpacity onPress={onProfilePress}>
+          <FastImage
+            source={
+              user.profileImage
+                ? {
+                    uri: `${process.env.S3_URL}${user.profileImage}`,
+                  }
+                : require("../../../assets/defaultProfileDark.png")
+            }
+            style={styles.profilePicture}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.statsContainer}>
         <View style={styles.statContainer}>
@@ -117,6 +130,6 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
     borderWidth: 2,
-    borderColor: "#505050",
+    borderColor: "#00d0ff",
   },
 });

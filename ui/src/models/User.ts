@@ -8,6 +8,7 @@ export type User = {
   allowedAttempts: number;
   isAdmin: boolean;
   created: Date;
+  profileImage: string;
   followers: Follower[];
   followings: Following[];
 };
@@ -15,4 +16,5 @@ export type User = {
 export type UserGetPost = {
   id: string;
   username: string;
+  profileImage: string;
 };
