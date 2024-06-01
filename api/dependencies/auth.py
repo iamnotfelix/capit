@@ -101,7 +101,8 @@ def sign_up_user(db: Session, user: UserSignUp):
         score=0,
         allowed_attempts=3,
         is_admin = False,
-        created = datetime.now()
+        created = datetime.now(),
+        profile_image = "",
     )
     db.add(db_user)
     db.commit()
