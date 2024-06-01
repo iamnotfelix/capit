@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Dimensions,
-  Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -9,10 +8,10 @@ import {
   Text,
   View,
 } from "react-native";
-import FastImage from "react-native-fast-image";
 
 import { useQueryClient } from "@tanstack/react-query";
 
+import { ImageItem } from "../../components/attempts";
 import { CloseButton } from "../../components/camera";
 import { Button, LoadingIndicator } from "../../components/shared";
 import { useAuth } from "../../contexts/AuthContext";
@@ -131,9 +130,6 @@ export const AllAttemptsScreen = ({
               </Text>
             </View>
             <ScrollView
-              style={{
-                backgroundColor: "#000",
-              }}
               horizontal
               showsHorizontalScrollIndicator={false}
               snapToAlignment={"center"}
@@ -150,7 +146,6 @@ export const AllAttemptsScreen = ({
                     key={attempt.id}
                     style={{
                       width: IMAGE_WIDTH,
-                      // height: "50%",
                       justifyContent: "center",
                       alignItems: "center",
                       marginLeft: index == 0 ? IMAGE_MARGIN : 0,
@@ -158,11 +153,10 @@ export const AllAttemptsScreen = ({
                         index == attempts.length - 1 ? IMAGE_MARGIN : 0,
                     }}
                   >
-                    <FastImage
-                      source={{
-                        uri: `${process.env.S3_URL}${attempt.imageName}`,
-                      }}
-                      style={styles.image}
+                    <ImageItem
+                      image={`${process.env.S3_URL}${attempt.imageName}`}
+                      height={470}
+                      width={310}
                     />
                   </View>
                 );
@@ -203,10 +197,9 @@ const layout = StyleSheet.create({
   },
   scoreContainer: {
     width: "30%",
-    backgroundColor: "#000",
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 20,
-    borderColor: "#505050",
+    borderColor: "#00d0ff",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -215,6 +208,7 @@ const layout = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 20,
+    marginBottom: 20,
   },
   postButtonContainer: {
     marginHorizontal: 30,
@@ -222,12 +216,6 @@ const layout = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  image: {
-    resizeMode: "cover",
-    width: "90%",
-    height: "70%",
-    borderRadius: 10,
-  },
   noAttemptsText: {
     color: "#fff",
     fontSize: 20,
@@ -240,7 +228,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   scoreText: {
-    color: "#fff",
+    color: "#00d0ff",
     fontSize: 25,
     textAlign: "center",
     fontWeight: "700",
